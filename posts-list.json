@@ -1,0 +1,23 @@
+[
+  {
+    "filename": "web-development-guide.md",
+    "title": "Getting Started with Web Development",
+    "date": "2025-08-27",
+    "category": "Technology",
+    "excerpt": "A beginner's guide to modern web development, covering HTML, CSS, JavaScript, and essential tools for building websites."
+  },
+  {
+    "filename": "art-of-learning.md",
+    "title": "The Art of Learning",
+    "date": "2025-08-25",
+    "category": "Life",
+    "excerpt": "Reflections on continuous learning, personal growth, and the journey of acquiring new skills in our rapidly changing world."
+  },
+  {
+    "filename": "responsive-design.md",
+    "title": "Building Responsive Websites",
+    "date": "2025-08-22",
+    "category": "Technology",
+    "excerpt": "Learn the principles of responsive web design and how to create websites that look great on all devices."
+  }
+]

@@ -33,35 +33,10 @@
             <div class="container">
                 <h3 class="section-title">Latest Posts</h3>
                 <div class="posts-grid">
-                    <article class="post-card">
-                        <div class="post-meta">
-                            <span class="post-date">August 27, 2025</span>
-                            <span class="post-category">Technology</span>
-                        </div>
-                        <h4 class="post-title">Getting Started with Web Development</h4>
-                        <p class="post-excerpt">A beginner's guide to modern web development, covering HTML, CSS, JavaScript, and essential tools for building websites.</p>
-                        <a href="posts/web-development-guide.html" class="read-more">Read More</a>
-                    </article>
-
-                    <article class="post-card">
-                        <div class="post-meta">
-                            <span class="post-date">August 25, 2025</span>
-                            <span class="post-category">Life</span>
-                        </div>
-                        <h4 class="post-title">The Art of Learning</h4>
-                        <p class="post-excerpt">Reflections on continuous learning, personal growth, and the journey of acquiring new skills in our rapidly changing world.</p>
-                        <a href="posts/art-of-learning.html" class="read-more">Read More</a>
-                    </article>
-
-                    <article class="post-card">
-                        <div class="post-meta">
-                            <span class="post-date">August 22, 2025</span>
-                            <span class="post-category">Technology</span>
-                        </div>
-                        <h4 class="post-title">Building Responsive Websites</h4>
-                        <p class="post-excerpt">Learn the principles of responsive web design and how to create websites that look great on all devices.</p>
-                        <a href="posts/responsive-design.html" class="read-more">Read More</a>
-                    </article>
+                    <!-- Posts will be dynamically loaded here -->
+                    <div class="loading" style="text-align: center; padding: 2rem; color: #6b7280;">
+                        Loading posts...
+                    </div>
                 </div>
             </div>
         </section>
@@ -98,6 +73,13 @@
         </div>
     </footer>
 
+    <script src="markdown-parser.js"></script>
+    <script>
+        // Load and render posts on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await blog.renderPosts();
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
