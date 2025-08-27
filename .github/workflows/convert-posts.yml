@@ -1,0 +1,39 @@
+name: Convert Markdown Posts to JSON
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'posts/*.md'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  convert-posts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Convert markdown posts to JSON
+      run: |
+        python3 convert-posts.py
+    
+    - name: Commit and push if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add posts-json/ posts-list.json
+        if ! git diff --cached --quiet; then
+          git commit -m "Auto-convert markdown posts to JSON for GitHub Pages"
+          git push
+        else
+          echo "No changes to commit"
+        fi

@@ -119,24 +119,60 @@ class BlogGenerator {
     async loadPost(filename) {
         try {
             console.log('Loading post:', filename);
-            const response = await fetch(`posts/${filename}`);
+            
+            // Try JSON first (GitHub Pages compatible), then fallback to markdown
+            let response, isJSON = false;
+            
+            if (filename.endsWith('.md')) {
+                // Try JSON version first
+                const jsonFilename = filename.replace('.md', '.json');
+                response = await fetch(`posts-json/${jsonFilename}`);
+                if (response.ok) {
+                    isJSON = true;
+                } else {
+                    // Fallback to markdown file
+                    response = await fetch(`posts/${filename}`);
+                }
+            } else if (filename.endsWith('.json')) {
+                response = await fetch(`posts-json/${filename}`);
+                isJSON = true;
+            }
             
             if (!response.ok) {
                 console.error(`Failed to load post: ${response.status} ${response.statusText}`);
                 throw new Error(`Post not found: ${filename} (${response.status})`);
             }
             
-            const content = await response.text();
-            console.log('Post content loaded successfully');
-            
-            const { frontMatter, content: markdownContent } = this.parser.extractFrontMatter(content);
-            const htmlContent = this.parser.parse(markdownContent);
-            
-            return {
-                ...frontMatter,
-                content: htmlContent,
-                filename
-            };
+            if (isJSON) {
+                // Load from JSON
+                const postData = await response.json();
+                console.log('Post loaded from JSON successfully');
+                
+                const htmlContent = this.parser.parse(postData.content);
+                
+                return {
+                    title: postData.title,
+                    date: postData.date,
+                    category: postData.category,
+                    excerpt: postData.excerpt,
+                    tags: postData.tags || [],
+                    content: htmlContent,
+                    filename: postData.filename
+                };
+            } else {
+                // Load from markdown
+                const content = await response.text();
+                console.log('Post loaded from markdown successfully');
+                
+                const { frontMatter, content: markdownContent } = this.parser.extractFrontMatter(content);
+                const htmlContent = this.parser.parse(markdownContent);
+                
+                return {
+                    ...frontMatter,
+                    content: htmlContent,
+                    filename
+                };
+            }
         } catch (error) {
             console.error('Error loading post:', error);
             return {
@@ -148,10 +184,10 @@ class BlogGenerator {
                     <p>This might happen if:</p>
                     <ul>
                         <li>You're opening the file directly in browser (use a local server instead)</li>
-                        <li>The markdown file doesn't exist</li>
+                        <li>The post file doesn't exist</li>
                         <li>There's a network connectivity issue</li>
                     </ul>
-                    <p><strong>Solution:</strong> Run <code>python serve.py</code> and visit <code>http://localhost:8000</code></p>
+                    <p><strong>For Local Testing:</strong> Run <code>python serve.py</code> and visit <code>http://localhost:8000</code></p>
                 </div>`,
                 date: new Date().toISOString().split('T')[0],
                 category: 'Error'
