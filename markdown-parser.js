@@ -118,10 +118,17 @@ class BlogGenerator {
     
     async loadPost(filename) {
         try {
+            console.log('Loading post:', filename);
             const response = await fetch(`posts/${filename}`);
-            if (!response.ok) throw new Error('Post not found');
+            
+            if (!response.ok) {
+                console.error(`Failed to load post: ${response.status} ${response.statusText}`);
+                throw new Error(`Post not found: ${filename} (${response.status})`);
+            }
             
             const content = await response.text();
+            console.log('Post content loaded successfully');
+            
             const { frontMatter, content: markdownContent } = this.parser.extractFrontMatter(content);
             const htmlContent = this.parser.parse(markdownContent);
             
@@ -132,7 +139,23 @@ class BlogGenerator {
             };
         } catch (error) {
             console.error('Error loading post:', error);
-            return null;
+            return {
+                title: 'Error Loading Post',
+                content: `<div class="error">
+                    <h2>Failed to Load Post</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Filename:</strong> ${filename}</p>
+                    <p>This might happen if:</p>
+                    <ul>
+                        <li>You're opening the file directly in browser (use a local server instead)</li>
+                        <li>The markdown file doesn't exist</li>
+                        <li>There's a network connectivity issue</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Run <code>python serve.py</code> and visit <code>http://localhost:8000</code></p>
+                </div>`,
+                date: new Date().toISOString().split('T')[0],
+                category: 'Error'
+            };
         }
     }
     
