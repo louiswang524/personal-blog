@@ -1,5 +1,12 @@
 [
   {
+    "filename": "understanding-gpt-models.md",
+    "title": "Understanding GPT Models - A Deep Dive into Architecture and Components",
+    "date": "2025-08-27",
+    "category": "Technology",
+    "excerpt": "A comprehensive technical guide to GPT model architecture covering tokenization, positional embeddings, attention mechanisms, MLPs, layer normalization, residual connections, and loss functions."
+  },
+  {
     "filename": "web-development-guide.md",
     "title": "Getting Started with Web Development",
     "date": "2025-08-27",
