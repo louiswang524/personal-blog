@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with Web Development - My Personal Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .post-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .post-meta {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .post-body h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 2rem 0 1rem 0;
+        }
+        
+        .post-body p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+        
+        .post-body ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .post-body li {
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            line-height: 1.7;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin: 2rem 0;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../index.html" class="logo">My Blog</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#home" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#about" class="nav-link">About</a></li>
+                    <li><a href="../index.html#contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main" style="padding: 4rem 0;">
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to Home</a>
+            
+            <article class="post-content">
+                <header class="post-header">
+                    <h1 class="post-title">Getting Started with Web Development</h1>
+                    <div class="post-meta">
+                        <span>Published on August 27, 2025</span> • <span>Technology</span>
+                    </div>
+                </header>
+                
+                <div class="post-body">
+                    <p>Web development has become one of the most sought-after skills in today's digital world. Whether you're looking to build your own website, start a career in tech, or simply understand how the web works, this guide will help you get started on the right path.</p>
+                    
+                    <h3>What is Web Development?</h3>
+                    <p>Web development is the process of creating websites and web applications. It involves both the visual aspects that users interact with (frontend) and the behind-the-scenes functionality (backend) that makes everything work smoothly.</p>
+                    
+                    <h3>The Three Pillars of Frontend Development</h3>
+                    
+                    <p><strong>HTML (HyperText Markup Language)</strong></p>
+                    <p>HTML is the foundation of every website. It provides the structure and content of web pages using elements like headings, paragraphs, links, and images. Think of HTML as the skeleton of your website.</p>
+                    
+                    <p><strong>CSS (Cascading Style Sheets)</strong></p>
+                    <p>CSS is responsible for the visual presentation of your website. It controls colors, fonts, layouts, and animations. CSS transforms your plain HTML structure into a beautiful, engaging user interface.</p>
+                    
+                    <p><strong>JavaScript</strong></p>
+                    <p>JavaScript adds interactivity and dynamic behavior to your websites. It handles user interactions, animations, data manipulation, and communication with servers.</p>
+                    
+                    <h3>Essential Tools for Web Development</h3>
+                    <ul>
+                        <li><strong>Code Editor:</strong> Visual Studio Code, Sublime Text, or Atom</li>
+                        <li><strong>Version Control:</strong> Git and GitHub for managing your code</li>
+                        <li><strong>Browser Developer Tools:</strong> Built-in tools for debugging and testing</li>
+                        <li><strong>Package Managers:</strong> npm or yarn for managing dependencies</li>
+                        <li><strong>Build Tools:</strong> Webpack, Vite, or Parcel for optimizing your code</li>
+                    </ul>
+                    
+                    <h3>Your Learning Path</h3>
+                    <p>Here's a suggested roadmap for beginners:</p>
+                    <ul>
+                        <li>Start with HTML fundamentals and semantic markup</li>
+                        <li>Learn CSS basics, including flexbox and grid layouts</li>
+                        <li>Master JavaScript fundamentals and DOM manipulation</li>
+                        <li>Explore responsive design principles</li>
+                        <li>Learn a frontend framework like React, Vue, or Angular</li>
+                        <li>Understand basic backend concepts and APIs</li>
+                        <li>Practice with real projects and build a portfolio</li>
+                    </ul>
+                    
+                    <h3>Best Practices</h3>
+                    <ul>
+                        <li>Write clean, readable code with proper indentation</li>
+                        <li>Use semantic HTML elements for better accessibility</li>
+                        <li>Optimize your websites for performance and SEO</li>
+                        <li>Test your websites across different browsers and devices</li>
+                        <li>Keep learning and stay updated with new technologies</li>
+                    </ul>
+                    
+                    <p>Remember, web development is a journey, not a destination. Start with the basics, practice regularly, and don't be afraid to make mistakes. Every expert developer started exactly where you are now. Happy coding!</p>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 My Personal Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
