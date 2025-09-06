@@ -7,6 +7,9 @@ on:
       - 'posts/*.md'
   workflow_dispatch: # Allow manual triggers
 
+permissions:
+  contents: write
+
 jobs:
   convert-posts:
     runs-on: ubuntu-latest
