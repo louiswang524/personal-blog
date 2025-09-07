@@ -2,20 +2,39 @@
 
 A modern, responsive personal blog that supports Markdown posts for easy content creation and editing.
 
+## 🚀 Quick Start
+
+1. **Clone or fork this repository**
+2. **Add your first post** to the `posts/` directory
+3. **Add images** to the `images/posts/` directory
+4. **Update `posts-list.json`** with your post metadata
+5. **Test locally** with `python serve.py`
+6. **Deploy to GitHub Pages** for free hosting
+
+Ready to start blogging! 📝
+
 ## Features
 
 - 📝 **Enhanced Markdown Support**: Comprehensive markdown parsing with advanced features
-- 🎨 **Syntax Highlighting**: Beautiful code syntax highlighting with Prism.js
-- 🏷️ **Tag System**: Organize posts with tags and filtering capabilities
-- 📱 **Responsive Design**: Looks great on all devices
-- 🎯 **Modern UI**: Clean, professional design with improved typography
-- 🚀 **GitHub Pages Ready**: Easy deployment with dual format support
+- 🎨 **Syntax Highlighting**: Beautiful code syntax highlighting with Prism.js for 100+ languages
+- 🏷️ **Tag System**: Organize posts with tags and advanced filtering capabilities
+- 📱 **Responsive Design**: Looks great on all devices with mobile-optimized layouts
+- 🎯 **Modern UI**: Clean, professional design with improved typography and spacing
+- 🚀 **GitHub Pages Ready**: Easy deployment with dual format support (MD + JSON)
 - 📖 **Dynamic Post Loading**: Automatically loads posts from markdown or JSON files
-- 🔍 **Advanced Search**: Full-text search across posts, tags, and categories
-- 📊 **Table Support**: Beautiful table rendering with hover effects
-- 🔗 **Smart Links**: External links open in new tabs automatically
-- 🖼️ **Image Optimization**: Lazy loading and responsive images
-- 📚 **Multiple Formats**: Supports both .md and .json post formats
+- 🔍 **Advanced Search**: Full-text search across posts, titles, tags, and categories
+- 📊 **Table Support**: Beautiful table rendering with hover effects and responsive design
+- 🔗 **Smart Links**: External links open in new tabs automatically with security attributes
+- 🖼️ **Professional Image Support**: 
+  - Click-to-zoom functionality with full-screen modal
+  - Automatic image captions from title text
+  - Lazy loading for optimal performance
+  - Responsive images that adapt to screen size
+  - Organized directory structure for easy management
+  - Hover effects and smooth animations
+- ✨ **Advanced Text Formatting**: Bold, italic, strikethrough, and nested formatting support
+- 📚 **Multiple Formats**: Supports both .md and .json post formats for maximum compatibility
+- ⚡ **Performance Optimized**: Fast loading, efficient parsing, and minimal JavaScript footprint
 
 ## File Structure
 
@@ -477,11 +496,64 @@ Create new categories by simply using them in your post front matter. The system
 
 ## Best Practices
 
+### 📝 **Content Creation**
 1. **Consistent Naming**: Use descriptive, URL-friendly filenames
 2. **Post Order**: Organize posts chronologically in `posts-list.json`
-3. **Images**: Store images in an `images/` folder and reference them relatively
-4. **SEO**: Write descriptive titles and excerpts
-5. **Readability**: Break up long posts with headers and lists
+3. **SEO Optimization**: Write descriptive titles, excerpts, and alt text
+4. **Readability**: Break up long posts with headers, lists, and images
+5. **Tag Strategy**: Use consistent, descriptive tags across posts for better discoverability
+
+### 🖼️ **Image Management**
+1. **File Organization**
+   ```
+   images/posts/post-topic-descriptive-name.png
+   images/posts/understanding-ai-architecture-diagram.jpg
+   images/posts/tutorial-step-1-screenshot.png
+   ```
+
+2. **File Naming Convention**
+   - Use lowercase letters and hyphens
+   - Include post topic for easy identification
+   - Be descriptive: `neural-network-architecture.png` vs `image1.png`
+   - Avoid spaces, special characters, and long names
+
+3. **Image Optimization**
+   - **File Size**: Keep images under 500KB for web performance
+   - **Dimensions**: Max width of 800px for most blog images
+   - **Formats**: 
+     - JPEG for photographs and complex images
+     - PNG for screenshots and images with transparency
+     - SVG for simple graphics, diagrams, and icons
+   - **Compression**: Use tools like TinyPNG or ImageOptim before uploading
+
+4. **Accessibility and SEO**
+   - Always include descriptive alt text
+   - Use meaningful captions via title attribute
+   - Consider screen readers when writing alt text
+   - Make alt text descriptive but concise
+
+5. **Responsive Design**
+   - Images automatically scale, but choose appropriate base sizes
+   - Test images on mobile devices
+   - Consider vertical images for mobile viewing
+
+### 🏷️ **Tagging Strategy**
+1. **Consistency**: Use the same tag names across posts
+2. **Hierarchy**: Consider both broad (`Technology`) and specific (`React.js`) tags
+3. **Quantity**: Use 3-6 relevant tags per post
+4. **Popular Tags**: Check existing popular tags before creating new ones
+
+### 📱 **Mobile Optimization**
+1. **Test Regularly**: View your blog on mobile devices
+2. **Image Sizes**: Ensure images aren't too large for mobile screens
+3. **Reading Experience**: Keep paragraphs reasonably short
+4. **Touch Targets**: Ensure links and buttons are easily tappable
+
+### 🔍 **Search and Discovery**
+1. **Descriptive Titles**: Make titles searchable and clear
+2. **Rich Excerpts**: Write compelling post summaries
+3. **Internal Linking**: Reference other posts when relevant
+4. **Categories**: Use categories consistently to organize content
 
 ## Troubleshooting
 
@@ -522,11 +594,37 @@ npx serve .
 
 Then visit `http://localhost:8000`
 
+### Image-Related Issues
+
+#### Images Not Displaying
+- Verify image file exists in the correct directory (`images/posts/`, etc.)
+- Check file path in markdown matches actual file location
+- Ensure image file names don't contain spaces (use hyphens instead)
+- Confirm image formats are supported (JPEG, PNG, SVG, WebP)
+
+#### Image Zoom Not Working
+- Check browser console for JavaScript errors
+- Ensure `initializeImageZoom()` function is being called
+- Verify images have the `responsive-image` class
+- Check that the image modal HTML elements exist in the DOM
+
+#### Images Loading Slowly
+- Optimize image file sizes (keep under 500KB when possible)
+- Use appropriate formats: JPEG for photos, PNG for screenshots/diagrams
+- Consider using SVG for simple graphics and icons
+- Ensure lazy loading is working (check `loading="lazy"` attribute)
+
+#### Caption Issues
+- Captions come from the image title text: `![Alt](path "Caption text")`
+- Check that title text is properly quoted in markdown
+- Verify the `image-caption` CSS class is being applied
+
 ### GitHub Pages Issues
 - Ensure CNAME file is properly configured for custom domains
-- Check that both `posts/` and `posts-json/` directories are pushed
-- Verify that GitHub Pages is enabled in repository settings
+- Check that both `posts/`, `posts-json/`, and `images/` directories are pushed
+- Verify that GitHub Pages is enabled in repository settings  
 - Wait a few minutes for changes to deploy
+- Confirm image paths are relative (not absolute) for proper GitHub Pages deployment
 
 ## Contributing
 
