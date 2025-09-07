@@ -15,27 +15,20 @@
     ]
   },
   {
-    "filename": "web-development-guide.json",
-    "title": "Getting Started with Web Development",
-    "date": "2025-08-27",
+    "filename": "understanding-vllm-architecture.json",
+    "title": "Understanding vLLM Architecture - From PagedAttention to Production-Scale LLM Serving",
+    "date": "2025-01-07",
     "category": "Technology",
-    "excerpt": "A beginner's guide to modern web development, covering HTML, CSS, JavaScript, and essential tools for building websites.",
-    "tags": []
-  },
-  {
-    "filename": "art-of-learning.json",
-    "title": "The Art of Learning",
-    "date": "2025-08-25",
-    "category": "Life",
-    "excerpt": "Reflections on continuous learning, personal growth, and the journey of acquiring new skills in our rapidly changing world.",
-    "tags": []
-  },
-  {
-    "filename": "responsive-design.json",
-    "title": "Building Responsive Websites",
-    "date": "2025-08-22",
-    "category": "Technology",
-    "excerpt": "Learn the principles of responsive web design and how to create websites that look great on all devices.",
-    "tags": []
+    "excerpt": "A comprehensive technical deep dive into vLLM's architecture, exploring PagedAttention innovation, memory optimizations, and how to contribute to this high-performance LLM inference engine.",
+    "tags": [
+      "Machine Learning",
+      "Deep Learning",
+      "LLM",
+      "vLLM",
+      "PagedAttention",
+      "CUDA",
+      "Performance",
+      "Open Source"
+    ]
   }
 ]
