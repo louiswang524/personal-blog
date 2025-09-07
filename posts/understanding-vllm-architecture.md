@@ -32,11 +32,8 @@ vLLM is designed as a **production-grade inference engine** that maximizes GPU u
 ## 🏗️ Architecture Deep Dive
 
 ### **Core Engine Flow**
-```
-Request → Scheduler → Block Manager → Model Executor → CUDA Kernels → Response
-                ↓
-        PagedAttention Memory Management
-```
+ ![LLM Engine Architecture](images/posts/llm_engine.jpg "Complete LLM Engine Architecture")
+
 
 ### **Key Components**
 
