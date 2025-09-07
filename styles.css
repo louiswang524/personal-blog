@@ -148,6 +148,24 @@ body {
     color: #1f2937;
 }
 
+.post-title-link {
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    display: block;
+    cursor: pointer;
+}
+
+.post-title-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.post-title-link:active {
+    transform: translateY(0);
+}
+
 .post-excerpt {
     color: #6b7280;
     margin-bottom: 1.5rem;
@@ -268,6 +286,10 @@ body {
     
     .post-card {
         padding: 1.5rem;
+    }
+    
+    .post-title-link:hover {
+        transform: none; /* Disable transform on mobile for better touch experience */
     }
 }
 

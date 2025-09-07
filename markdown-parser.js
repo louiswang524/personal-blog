@@ -612,7 +612,7 @@ class BlogGenerator {
                     <span class="post-date">${date}</span>
                     <span class="post-category">${post.category || 'General'}</span>
                 </div>
-                <h4 class="post-title">${post.title}</h4>
+                <h4 class="post-title"><a href="post.html?file=${post.filename}" class="post-title-link">${post.title}</a></h4>
                 <p class="post-excerpt">${post.excerpt || ''}</p>
                 ${tagsHtml}
                 <a href="post.html?file=${post.filename}" class="read-more">Read More</a>
