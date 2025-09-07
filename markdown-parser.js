@@ -175,7 +175,12 @@ class MarkdownParser {
         // Handle images with alt text and optional titles
         html = html.replace(/!\[([^\]]*)\]\(([^)]+)(?:\s+"([^"]*)")?\)/gim, (match, alt, src, title) => {
             const titleAttr = title ? ` title="${title}"` : '';
-            return `<img src="${src}" alt="${alt}"${titleAttr} loading="lazy" />`;
+            
+            // Add responsive image wrapper and enhanced attributes
+            return `<figure class="image-figure">
+                <img src="${src}" alt="${alt}"${titleAttr} loading="lazy" class="responsive-image" />
+                ${title ? `<figcaption class="image-caption">${title}</figcaption>` : ''}
+            </figure>`;
         });
         
         return html;

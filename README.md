@@ -42,6 +42,11 @@ personal-blog/
 │   ├── understanding-gpt-models.json
 │   ├── understanding-vllm-architecture.json
 │   └── [your-posts].json
+├── images/                 # Image assets directory
+│   ├── posts/              # Images used in blog post content
+│   ├── thumbnails/         # Smaller versions for previews
+│   ├── icons/              # UI icons and small graphics
+│   └── README.md           # Image usage documentation
 └── README.md               # This documentation file
 ```
 
@@ -149,7 +154,8 @@ def fibonacci(n):
 
 [External link](https://example.com) (opens in new tab)
 [Internal link](/other-post.html)
-![Responsive image](path/to/image.jpg "Optional title")
+![Responsive image with caption](images/posts/sample-image.svg "This image has a caption that appears below")
+![Simple image](images/posts/diagram.png)
 
 ## Blockquotes
 
@@ -229,6 +235,91 @@ git push origin main
 ```
 
 Your post will be live on GitHub Pages within minutes!
+
+## Working with Images
+
+### 📸 Adding Images to Posts
+
+The blog supports rich image functionality with automatic optimization and zoom capabilities.
+
+#### Image Directory Structure
+```
+images/
+├── posts/          # Main images used in blog posts
+├── thumbnails/     # Optional smaller versions for previews
+├── icons/          # UI elements and small graphics
+└── README.md       # Detailed image guidelines
+```
+
+#### Basic Image Usage
+```markdown
+![Alt text description](images/posts/my-screenshot.png)
+![Architecture diagram](images/posts/system-architecture.jpg "System Architecture Overview")
+```
+
+#### Image Features
+- ✅ **Responsive Design**: Images automatically resize for different screens
+- ✅ **Lazy Loading**: Images load as users scroll for better performance  
+- ✅ **Click to Zoom**: Click any image to view it in full-screen modal
+- ✅ **Captions**: Add titles to images for automatic caption display
+- ✅ **Hover Effects**: Subtle animations enhance user experience
+- ✅ **Accessibility**: Proper alt text support for screen readers
+
+#### Image Best Practices
+
+1. **File Organization**
+   ```
+   images/posts/understanding-gpt-models-architecture.png
+   images/posts/understanding-gpt-models-training.jpg  
+   images/posts/vllm-performance-comparison.svg
+   ```
+
+2. **File Naming**
+   - Use descriptive names: `gpt-architecture-diagram.png`
+   - Include post topic: `understanding-transformers-attention.jpg`
+   - Use hyphens, not spaces: `my-blog-post-image.png`
+
+3. **Optimal Formats**
+   - **JPEG**: Photos and complex images (smaller file size)
+   - **PNG**: Screenshots, diagrams with transparency
+   - **SVG**: Simple graphics, logos, icons (scalable)
+
+4. **Image Sizes**
+   - **Width**: 800px or less for optimal loading
+   - **File Size**: Keep under 500KB when possible
+   - **Height**: Let it scale naturally with width
+
+5. **Adding Captions**
+   ```markdown
+   ![Architecture Overview](images/posts/architecture.png "Complete system architecture showing data flow")
+   ```
+   The title text becomes an elegant caption below the image.
+
+#### Example Usage in Post
+```markdown
+---
+title: Understanding Neural Networks
+date: 2025-01-01
+category: AI/ML
+excerpt: A visual guide to neural network architecture
+---
+
+# Understanding Neural Networks
+
+Neural networks are the foundation of modern AI. Let's visualize how they work:
+
+![Neural Network Architecture](images/posts/neural-network-diagram.png "Basic neural network with input, hidden, and output layers")
+
+The diagram above shows the three main components:
+
+1. **Input Layer**: Receives data
+2. **Hidden Layers**: Process information  
+3. **Output Layer**: Produces results
+
+For comparison, here's a deep learning model:
+
+![Deep Learning Model](images/posts/deep-network.jpg)
+```
 
 ## Enhanced Markdown Features
 
