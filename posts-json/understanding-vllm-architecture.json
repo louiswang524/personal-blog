@@ -1,7 +1,7 @@
 {
   "filename": "understanding-vllm-architecture.md",
   "title": "Understanding vLLM Architecture - From PagedAttention to Production-Scale LLM Serving",
-  "date": "2025-01-07",
+  "date": "2025-09-06",
   "category": "Technology",
   "excerpt": "A comprehensive technical deep dive into vLLM's architecture, exploring PagedAttention innovation, memory optimizations, and how to contribute to this high-performance LLM inference engine.",
   "tags": [
