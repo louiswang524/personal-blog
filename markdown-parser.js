@@ -1,85 +1,313 @@
-// Simple Markdown to HTML converter
+// Enhanced Markdown to HTML converter
 class MarkdownParser {
     constructor() {
-        this.rules = [
-            // Headers
-            { pattern: /^### (.*$)/gim, replacement: '<h3>$1</h3>' },
-            { pattern: /^## (.*$)/gim, replacement: '<h2>$1</h2>' },
-            { pattern: /^# (.*$)/gim, replacement: '<h1>$1</h1>' },
-            
-            // Bold and Italic
-            { pattern: /\*\*\*(.*)\*\*\*/gim, replacement: '<strong><em>$1</em></strong>' },
-            { pattern: /\*\*(.*)\*\*/gim, replacement: '<strong>$1</strong>' },
-            { pattern: /\*(.*)\*/gim, replacement: '<em>$1</em>' },
-            
-            // Code blocks
-            { pattern: /```([\s\S]*?)```/gim, replacement: '<pre><code>$1</code></pre>' },
-            { pattern: /`(.*?)`/gim, replacement: '<code>$1</code>' },
-            
-            // Links
-            { pattern: /\[([^\]]*)\]\(([^\)]*)\)/gim, replacement: '<a href="$2">$1</a>' },
-            
-            // Images
-            { pattern: /!\[([^\]]*)\]\(([^\)]*)\)/gim, replacement: '<img alt="$1" src="$2" />' },
-            
-            // Blockquotes
-            { pattern: /^\> (.*$)/gim, replacement: '<blockquote>$1</blockquote>' },
-            
-            // Lists
-            { pattern: /^\* (.*$)/gim, replacement: '<li>$1</li>' },
-            { pattern: /^\d+\. (.*$)/gim, replacement: '<li>$1</li>' },
-            
-            // Horizontal rule
-            { pattern: /^\-\-\-$/gim, replacement: '<hr>' },
-            
-            // Line breaks
-            { pattern: /\n$/gim, replacement: '<br />' }
-        ];
+        // More comprehensive parsing with better order and handling
+        this.rules = [];
     }
     
     parse(markdown) {
         let html = markdown;
         
-        // Process each rule
-        for (let rule of this.rules) {
-            html = html.replace(rule.pattern, rule.replacement);
-        }
-        
-        // Convert paragraphs
-        html = this.convertParagraphs(html);
-        
-        // Wrap lists
-        html = this.wrapLists(html);
+        // Process in specific order for better results
+        html = this.processCodeBlocks(html);
+        html = this.processHeaders(html);
+        html = this.processHorizontalRules(html);
+        html = this.processBlockquotes(html);
+        html = this.processLists(html);
+        html = this.processImages(html);
+        html = this.processLinks(html);
+        html = this.processTables(html);
+        html = this.processTextFormatting(html);
+        html = this.processInlineCode(html);
+        html = this.processLineBreaks(html);
+        html = this.processParagraphs(html);
         
         return html;
     }
     
-    convertParagraphs(html) {
-        // Split by double line breaks
-        const paragraphs = html.split('\n\n');
-        
-        return paragraphs.map(p => {
-            p = p.trim();
-            if (p === '') return '';
-            
-            // Don't wrap if it's already an HTML element
-            if (p.startsWith('<h') || p.startsWith('<pre') || p.startsWith('<blockquote') || 
-                p.startsWith('<ul') || p.startsWith('<ol') || p.startsWith('<li') || 
-                p.startsWith('<hr')) {
-                return p;
-            }
-            
-            return `<p>${p}</p>`;
-        }).join('\n\n');
-    }
-    
-    wrapLists(html) {
-        // Wrap consecutive <li> elements in <ul>
-        html = html.replace(/(<li>.*<\/li>)(\s*\n\s*<li>.*<\/li>)*/gim, function(match) {
-            return '<ul>\n' + match + '\n</ul>';
+    processCodeBlocks(html) {
+        // Handle fenced code blocks with language specification
+        html = html.replace(/```(\w+)?\n?([\s\S]*?)```/gim, (match, language, code) => {
+            const lang = language ? ` class="language-${language}"` : '';
+            const trimmedCode = code.trim();
+            return `<pre><code${lang}>${this.escapeHtml(trimmedCode)}</code></pre>`;
         });
         
         return html;
+    }
+    
+    processHeaders(html) {
+        // Handle headers H1-H6
+        html = html.replace(/^#{6}\s+(.*)$/gim, '<h6>$1</h6>');
+        html = html.replace(/^#{5}\s+(.*)$/gim, '<h5>$1</h5>');
+        html = html.replace(/^#{4}\s+(.*)$/gim, '<h4>$1</h4>');
+        html = html.replace(/^#{3}\s+(.*)$/gim, '<h3>$1</h3>');
+        html = html.replace(/^#{2}\s+(.*)$/gim, '<h2>$1</h2>');
+        html = html.replace(/^#{1}\s+(.*)$/gim, '<h1>$1</h1>');
+        
+        return html;
+    }
+    
+    processHorizontalRules(html) {
+        // Handle horizontal rules
+        html = html.replace(/^[-*_]{3,}$/gim, '<hr>');
+        return html;
+    }
+    
+    processBlockquotes(html) {
+        // Handle blockquotes - improved to handle multiple lines
+        const lines = html.split('\n');
+        let inBlockquote = false;
+        let blockquoteContent = '';
+        let result = [];
+        
+        for (let line of lines) {
+            if (line.startsWith('> ')) {
+                if (!inBlockquote) {
+                    inBlockquote = true;
+                    blockquoteContent = '';
+                }
+                blockquoteContent += line.substring(2) + '\n';
+            } else {
+                if (inBlockquote) {
+                    result.push(`<blockquote>${blockquoteContent.trim()}</blockquote>`);
+                    inBlockquote = false;
+                }
+                result.push(line);
+            }
+        }
+        
+        if (inBlockquote) {
+            result.push(`<blockquote>${blockquoteContent.trim()}</blockquote>`);
+        }
+        
+        return result.join('\n');
+    }
+    
+    processLists(html) {
+        const lines = html.split('\n');
+        let result = [];
+        let inOrderedList = false;
+        let inUnorderedList = false;
+        let listItems = [];
+        let currentIndentLevel = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Check for unordered list items
+            const unorderedMatch = line.match(/^(\s*)[-*+]\s+(.*)$/);
+            // Check for ordered list items
+            const orderedMatch = line.match(/^(\s*)\d+\.\s+(.*)$/);
+            
+            if (unorderedMatch) {
+                const [, indent, content] = unorderedMatch;
+                const indentLevel = indent.length;
+                
+                if (inOrderedList) {
+                    result.push('<ol>');
+                    result.push(...listItems);
+                    result.push('</ol>');
+                    listItems = [];
+                    inOrderedList = false;
+                }
+                
+                if (!inUnorderedList) {
+                    inUnorderedList = true;
+                    currentIndentLevel = indentLevel;
+                }
+                
+                listItems.push(`<li>${content}</li>`);
+            } else if (orderedMatch) {
+                const [, indent, content] = orderedMatch;
+                const indentLevel = indent.length;
+                
+                if (inUnorderedList) {
+                    result.push('<ul>');
+                    result.push(...listItems);
+                    result.push('</ul>');
+                    listItems = [];
+                    inUnorderedList = false;
+                }
+                
+                if (!inOrderedList) {
+                    inOrderedList = true;
+                    currentIndentLevel = indentLevel;
+                }
+                
+                listItems.push(`<li>${content}</li>`);
+            } else {
+                // End current list if we're in one
+                if (inUnorderedList) {
+                    result.push('<ul>');
+                    result.push(...listItems);
+                    result.push('</ul>');
+                    listItems = [];
+                    inUnorderedList = false;
+                } else if (inOrderedList) {
+                    result.push('<ol>');
+                    result.push(...listItems);
+                    result.push('</ol>');
+                    listItems = [];
+                    inOrderedList = false;
+                }
+                
+                result.push(line);
+            }
+        }
+        
+        // Handle remaining list items
+        if (inUnorderedList) {
+            result.push('<ul>');
+            result.push(...listItems);
+            result.push('</ul>');
+        } else if (inOrderedList) {
+            result.push('<ol>');
+            result.push(...listItems);
+            result.push('</ol>');
+        }
+        
+        return result.join('\n');
+    }
+    
+    processImages(html) {
+        // Handle images with alt text and optional titles
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)(?:\s+"([^"]*)")?\)/gim, (match, alt, src, title) => {
+            const titleAttr = title ? ` title="${title}"` : '';
+            return `<img src="${src}" alt="${alt}"${titleAttr} loading="lazy" />`;
+        });
+        
+        return html;
+    }
+    
+    processLinks(html) {
+        // Handle links with optional titles
+        html = html.replace(/\[([^\]]*)\]\(([^)]+)(?:\s+"([^"]*)")?\)/gim, (match, text, href, title) => {
+            const titleAttr = title ? ` title="${title}"` : '';
+            const target = href.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+            return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+        });
+        
+        return html;
+    }
+    
+    processTables(html) {
+        // Handle tables (basic implementation)
+        const lines = html.split('\n');
+        let result = [];
+        let inTable = false;
+        let tableRows = [];
+        let isHeaderProcessed = false;
+        
+        for (let line of lines) {
+            if (line.includes('|') && line.trim().length > 0) {
+                if (!inTable) {
+                    inTable = true;
+                    isHeaderProcessed = false;
+                }
+                
+                const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell.length > 0);
+                
+                // Check if this is a separator line
+                if (cells.every(cell => /^[-:]+$/.test(cell))) {
+                    continue; // Skip separator line
+                }
+                
+                const tag = !isHeaderProcessed ? 'th' : 'td';
+                const row = `<tr>${cells.map(cell => `<${tag}>${cell}</${tag}>`).join('')}</tr>`;
+                tableRows.push(row);
+                
+                if (!isHeaderProcessed) {
+                    isHeaderProcessed = true;
+                }
+            } else {
+                if (inTable) {
+                    const tableHtml = isHeaderProcessed 
+                        ? `<table><thead>${tableRows[0]}</thead><tbody>${tableRows.slice(1).join('')}</tbody></table>`
+                        : `<table><tbody>${tableRows.join('')}</tbody></table>`;
+                    result.push(tableHtml);
+                    tableRows = [];
+                    inTable = false;
+                    isHeaderProcessed = false;
+                }
+                result.push(line);
+            }
+        }
+        
+        if (inTable) {
+            const tableHtml = isHeaderProcessed 
+                ? `<table><thead>${tableRows[0]}</thead><tbody>${tableRows.slice(1).join('')}</tbody></table>`
+                : `<table><tbody>${tableRows.join('')}</tbody></table>`;
+            result.push(tableHtml);
+        }
+        
+        return result.join('\n');
+    }
+    
+    processTextFormatting(html) {
+        // Handle bold, italic, strikethrough in correct order
+        html = html.replace(/~~(.*?)~~/gim, '<del>$1</del>'); // Strikethrough
+        html = html.replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>'); // Bold italic
+        html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>'); // Bold
+        html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>'); // Italic
+        html = html.replace(/__(.*?)__/gim, '<strong>$1</strong>'); // Bold (alternative)
+        html = html.replace(/_(.*?)_/gim, '<em>$1</em>'); // Italic (alternative)
+        
+        return html;
+    }
+    
+    processInlineCode(html) {
+        // Handle inline code (after other processing to avoid conflicts)
+        html = html.replace(/`([^`]+)`/gim, '<code>$1</code>');
+        return html;
+    }
+    
+    processLineBreaks(html) {
+        // Handle line breaks (double space + newline)
+        html = html.replace(/  \n/gim, '<br>\n');
+        return html;
+    }
+    
+    processParagraphs(html) {
+        // Split by double line breaks and wrap in paragraphs
+        const blocks = html.split(/\n\s*\n/);
+        
+        return blocks.map(block => {
+            block = block.trim();
+            if (block === '') return '';
+            
+            // Don't wrap if it's already an HTML block element
+            if (this.isBlockElement(block)) {
+                return block;
+            }
+            
+            return `<p>${block}</p>`;
+        }).join('\n\n');
+    }
+    
+    isBlockElement(html) {
+        const blockTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'blockquote', 
+                          'pre', 'ul', 'ol', 'li', 'hr', 'table', 'thead', 'tbody', 'tr'];
+        
+        for (let tag of blockTags) {
+            if (html.startsWith(`<${tag}`)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    escapeHtml(text) {
+        const htmlEscapes = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;'
+        };
+        
+        return text.replace(/[&<>"']/g, (match) => htmlEscapes[match]);
     }
     
     extractFrontMatter(content) {

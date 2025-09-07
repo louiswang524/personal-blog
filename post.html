@@ -6,6 +6,10 @@
     <title>Post - My Personal Blog</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <style>
         .post-content {
             max-width: 800px;
@@ -35,40 +39,103 @@
             font-size: 1rem;
         }
         
-        .post-body h1, .post-body h2, .post-body h3 {
+        .post-body h1, .post-body h2, .post-body h3, .post-body h4, .post-body h5, .post-body h6 {
             font-weight: 600;
             color: #1f2937;
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1.25rem 0;
+            line-height: 1.3;
         }
         
-        .post-body h1 { font-size: 2rem; }
-        .post-body h2 { font-size: 1.75rem; }
+        .post-body h1 { font-size: 2.25rem; margin-top: 3rem; }
+        .post-body h2 { font-size: 1.875rem; margin-top: 2.5rem; }
         .post-body h3 { font-size: 1.5rem; }
+        .post-body h4 { font-size: 1.25rem; }
+        .post-body h5 { font-size: 1.125rem; }
+        .post-body h6 { font-size: 1rem; }
         
         .post-body p {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
             line-height: 1.8;
-            color: #4b5563;
+            color: #374151;
+            font-size: 1.05rem;
         }
         
         .post-body ul, .post-body ol {
-            margin-left: 2rem;
-            margin-bottom: 1.5rem;
+            margin: 1.5rem 0 2rem 1.5rem;
+            padding-left: 0;
         }
         
         .post-body li {
-            margin-bottom: 0.5rem;
-            color: #4b5563;
+            margin-bottom: 0.75rem;
+            color: #374151;
             line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .post-body ul li {
+            list-style-type: disc;
+        }
+        
+        .post-body ol li {
+            list-style-type: decimal;
         }
         
         .post-body blockquote {
             background: #f8fafc;
             border-left: 4px solid #2563eb;
-            padding: 1rem 1.5rem;
-            margin: 2rem 0;
+            padding: 1.25rem 1.75rem;
+            margin: 2.5rem 0;
             font-style: italic;
             color: #4b5563;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .post-body blockquote p {
+            margin-bottom: 1rem;
+        }
+        
+        .post-body blockquote p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Table styling */
+        .post-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .post-body th, .post-body td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .post-body th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .post-body td {
+            color: #4b5563;
+            font-size: 0.95rem;
+        }
+        
+        .post-body tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Strikethrough styling */
+        .post-body del {
+            color: #6b7280;
+            text-decoration-color: #ef4444;
         }
         
         .post-body code {
@@ -81,18 +148,32 @@
         }
         
         .post-body pre {
-            background: #1f2937;
-            color: #e5e7eb;
+            background: #282c34 !important;
+            border-radius: 12px;
             padding: 1.5rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
+            margin: 2rem 0;
             overflow-x: auto;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
         
         .post-body pre code {
-            background: none;
+            background: none !important;
             padding: 0;
             color: inherit;
+            font-family: 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Override Prism styles for better appearance */
+        .post-body pre[class*="language-"] {
+            background: #282c34 !important;
+            border-radius: 12px !important;
+        }
+        
+        .post-body code[class*="language-"] {
+            background: none !important;
         }
         
         .post-body img {
@@ -152,6 +233,75 @@
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
         }
+        
+        /* Mobile responsive improvements */
+        @media (max-width: 768px) {
+            .post-content {
+                padding: 1.5rem 15px;
+                margin: 0 10px;
+            }
+            
+            .post-title {
+                font-size: 2rem;
+            }
+            
+            .post-body h1 { font-size: 1.875rem; }
+            .post-body h2 { font-size: 1.5rem; }
+            .post-body h3 { font-size: 1.25rem; }
+            
+            .post-body pre {
+                padding: 1rem;
+                margin: 1.5rem 0;
+            }
+            
+            .post-body pre code {
+                font-size: 0.85rem;
+            }
+            
+            .post-body table {
+                font-size: 0.875rem;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+            
+            .post-body th, .post-body td {
+                padding: 0.75rem;
+                min-width: 120px;
+            }
+            
+            .post-body ul, .post-body ol {
+                margin-left: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .post-content {
+                padding: 1rem 10px;
+                margin: 0 5px;
+            }
+            
+            .post-title {
+                font-size: 1.75rem;
+            }
+            
+            .post-body h1 { font-size: 1.5rem; }
+            .post-body h2 { font-size: 1.25rem; }
+            .post-body h3 { font-size: 1.125rem; }
+            
+            .post-body p, .post-body li {
+                font-size: 1rem;
+            }
+            
+            .post-body blockquote {
+                padding: 1rem 1.25rem;
+                margin: 1.5rem 0;
+            }
+            
+            .post-body pre {
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -193,6 +343,10 @@
             
             if (filename) {
                 await blog.renderSinglePost(filename);
+                // Trigger syntax highlighting after content is loaded
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAll();
+                }
             } else {
                 document.querySelector('.post-content').innerHTML = '<h1>No post specified</h1>';
             }
