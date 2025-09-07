@@ -32,6 +32,22 @@
         <section class="posts">
             <div class="container">
                 <h3 class="section-title">Latest Posts</h3>
+                
+                <!-- Tag Search Section -->
+                <div class="tag-search-section">
+                    <div class="search-controls">
+                        <input type="text" id="search-input" placeholder="Search posts..." class="search-input">
+                        <button id="clear-filters" class="clear-btn">Clear Filters</button>
+                    </div>
+                    
+                    <div class="tags-section">
+                        <h4 class="tags-title">Filter by Tags:</h4>
+                        <div class="tags-container" id="tags-container">
+                            <!-- Tags will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="posts-grid">
                     <!-- Posts will be dynamically loaded here -->
                     <div class="loading" style="text-align: center; padding: 2rem; color: #6b7280;">
