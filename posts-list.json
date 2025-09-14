@@ -30,5 +30,15 @@
       "Transformers",
       "AI"
     ]
+  },
+  {
+    "filename": "semantic-id-recsys.json",
+    "title": "Semantic ID for modern recommendation system",
+    "date": "2025-09-13",
+    "category": "Technology",
+    "excerpt": " A brief description of approaches to generate semantic IDs.",
+    "tags": [
+      "RecSys"
+    ]
   }
 ]
