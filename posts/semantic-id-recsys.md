@@ -1,5 +1,5 @@
 ---
-title: How to use semantic ID
+title: Semantic ID for mordern recommendation system
 date: 2025-09-13
 category: Technology
 excerpt: A brief description of approaches to generate semantic IDs.
@@ -88,7 +88,7 @@ Common technical patterns emerge across implementations: multimodal content enco
 ## Conclution 
 The latest developments (2023-2025) show remarkable advances in both performance and integration sophistication. RPG (KDD 2025) eliminates the autoregressive bottleneck through parallel prediction of long semantic IDs (up to 64 tokens), achieving 12.6% improvement in NDCG@10 over generative baselines while dramatically improving inference efficiency.
 
-LLM integration represents the current frontier. FLIP (Huawei) successfully aligns ID-based recommendation models with LLMs through joint learning, showing 6-17% improvements with 80% token size reduction. CALRec fine-tunes PaLM-2 for sequential recommendations, while RecGPT demonstrates zero-shot generalization across recommendation domains through unified item tokenization with Finite Scalar Quantization (FSQ). 
+LLM integration represents the current frontier. FLIP[10] (Huawei) successfully aligns ID-based recommendation models with LLMs through joint learning, showing 6-17% improvements with 80% token size reduction. CALRec fine-tunes PaLM-2 for sequential recommendations, while RecGPT demonstrates zero-shot generalization across recommendation domains through unified item tokenization with Finite Scalar Quantization (FSQ). 
 
 Unified architectures are emerging that combine the memorization capabilities of traditional ID-based systems with LLMs' generalization power. OneRec represents the first industrial-scale end-to-end generative model with encoder-decoder structure and sparse Mixture-of-Experts (MoE). LIGER combines dense retrieval with generative retrieval for optimal performance across different recommendation scenarios. 
 
@@ -126,3 +126,5 @@ reference:
 [8] OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment (https://arxiv.org/abs/2502.18965)
 
 [9] Generative Recommendation with Semantic IDs: A Practitioner's Handbook (https://arxiv.org/abs/2507.22224)
+
+[10] FLIP: Fine-grained Alignment between ID-based Models and Pretrained Language Models for CTR Prediction (https://arxiv.org/abs/2310.19453)
