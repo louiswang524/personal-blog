@@ -5,10 +5,10 @@ category: Technology
 excerpt: A brief description of approaches to generate semantic IDs.
 tags: ["RecSys"]
 ---
-# Semantic ID for modern Recommendation System
+# Semantic ID for Modern Recommendation System
 
 ## Table of Contents
-- [Semantic ID for modern Recommendation System](#semantic-id-for-modern-recommendation-system)
+- [Semantic ID for Modern Recommendation System](#semantic-id-for-modern-recommendation-system)
   - [Table of Contents](#table-of-contents)
   - [Intuition: NLP \<\> Recommendation system](#intuition-nlp--recommendation-system)
     - [From word vectors to item understanding (2013)](#from-word-vectors-to-item-understanding-2013)
@@ -21,10 +21,10 @@ tags: ["RecSys"]
     - [Data sparsity and maintenance overhead](#data-sparsity-and-maintenance-overhead)
     - [Why semantic IDs solve these problems](#why-semantic-ids-solve-these-problems)
   - [The general Idea - vector quantization](#the-general-idea---vector-quantization)
-  - [Industry innovations at massive scale: Google, Kuaishou, Snapchat](#industry-innovations-at-massive-scale-google-kuaishou-snapchat)
+  - [Industry innovations at massive scale: Google, Kuaishou, Baidu](#industry-innovations-at-massive-scale-google-kuaishou-baidu)
     - [Google: TIGER\[2\]](#google-tiger2)
     - [Kuaishou: OneRec\[8\]](#kuaishou-onerec8)
-    - [Baide: Sparse Meets Dense\[9\]](#baide-sparse-meets-dense9)
+    - [Baidu: Sparse Meets Dense\[9\]](#baidu-sparse-meets-dense9)
   - [Conclusion](#conclusion)
   - [Future Directions](#future-directions)
 
@@ -118,7 +118,10 @@ The hierarchical structure enables **interpretable recommendations**. When a sys
 
 There are also other methods on generating semantic IDs. For more technical details and how to implement them, please checkout my github on educational implementations: [vector-quantization](https://github.com/louiswang524/vector-quantization/)
 
-## Industry innovations at massive scale: Google, Kuaishou, Snapchat
+## Industry innovations at massive scale: Google, Kuaishou, Baidu
+
+Let's take a look at 3 related work from Google, Kuaishou and Baidu. Google's TIGER is the first large-scale production model using generative retrieval with semantic ID, while Kuaishou innovates advanced model architecture in both quantization (RQ KMeans) and generative modeling (MOE), follow by preference alignment with reward modeling. Baidu's work combine 2 stages of quantization and generation into an end-to-end work.
+
 ### Google: TIGER[2]
 Major technology companies have deployed semantic ID systems in production with measurable business impact. Google's TIGER (Transformer Index for GEnerative Recommenders) represents a breakthrough in generative retrieval for recommendation systems, published at NeurIPS 2023 by researchers from Google.
 The TIGER framework consists of three core components:
@@ -148,7 +151,7 @@ OneRec includes an Iterative Preference Alignment module combined with Direct Pr
 The paper represents a major shift toward applying modern generative AI techniques to recommendation systems, moving away from complex multi-stage pipelines toward unified end-to-end approaches. It shows that techniques successful in language modeling (scaling laws, preference alignment) can be adapted effectively for recommendation tasks, potentially setting a new direction for the field.
 
 
-### Baide: Sparse Meets Dense[9]
+### Baidu: Sparse Meets Dense[9]
 
 Both TIGER and OneRec have two stages: vector quantization to generate semantic ID, and then sequence modeling with transformers for generative recommendation. Baidu's paper claims that there is some information loss due to the separation of stages such as quantization and sequence modeling, and its COBRA (Cascaded Bi-Representation Architecture) Framework solves the challenge of integrating generative and dense retrieval methods.
 
@@ -177,12 +180,12 @@ The next 2-5 years promise transformative developments across multiple dimension
 
 Multimodal and cross-modal semantic IDs represent a major opportunity. **Advanced multimodal architectures** will integrate Transformers for encoding multi-modal content in RQ-VAE frameworks. Cross-modal transfer learning will enable better semantic understanding across different content modalities. Dynamic modal weight assignment will adaptively adjust modality importance based on user preferences and content characteristics. 
 
-Scalability innovations will address current bottlenecks. Parallel semantic ID[11] generation eliminates autoregressive constraints while maintaining semantic coherence. Mixture-of-Codes[12] approaches enable superior discriminability and dimension robustness for better scale-up performance. Real-time adaptive quantization[13] will dynamically adjust semantic representations based on evolving content and user behavior patterns.
+**Scalability innovations** will address current bottlenecks. Parallel semantic ID[11] generation eliminates autoregressive constraints while maintaining semantic coherence. Mixture-of-Codes[12] approaches enable superior discriminability and dimension robustness for better scale-up performance. Real-time adaptive quantization[13] will dynamically adjust semantic representations based on evolving content and user behavior patterns. The end-to-end fasion in recsys will significantly improve the Model FLoaps Unitilization (MFU) for better model performance.
 
-New application domains extend far beyond traditional recommendations. Conversational AI integration through Retrieval Augmented Generation (RAG) enables real-time, contextual recommendations. AI-Generated Content (AIGC) systems use semantic IDs to generate personalized items rather than just retrieve existing ones. Professional applications include LinkedIn's networking recommendations, enterprise knowledge management, educational content systems, and healthcare recommendations with privacy-preserving techniques.
+**New application domains** extend far beyond traditional recommendations. Conversational AI integration through Retrieval Augmented Generation (RAG) enables real-time, contextual recommendations. AI-Generated Content (AIGC) systems use semantic IDs to generate personalized Ads/items rather than just retrieve existing ones. 
 
 
-reference:
+Reference:
 
 [1] [Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations](https://arxiv.org/html/2306.08121v2)
 
