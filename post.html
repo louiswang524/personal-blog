@@ -11,13 +11,110 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <style>
-        .post-content {
-            max-width: 800px;
+        .post-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 3rem;
+            max-width: 1200px;
             margin: 0 auto;
+        }
+
+        .post-content {
             padding: 2rem 20px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .post-sidebar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .other-posts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .other-post-item {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .other-post-item:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .other-post-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .other-post-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .categories, .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .category-item, .tag-item {
+            padding: 0.25rem 0.75rem;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .category-item:hover, .tag-item:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .loading-sidebar {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+            padding: 1rem 0;
         }
         
         .post-header {
@@ -384,9 +481,20 @@
         
         /* Mobile responsive improvements */
         @media (max-width: 768px) {
+            .post-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .post-sidebar {
+                order: -1; /* Show sidebar before post on mobile */
+                position: static;
+                margin-bottom: 2rem;
+            }
+
             .post-content {
                 padding: 1.5rem 15px;
-                margin: 0 10px;
+                margin: 0;
             }
             
             .post-title {
@@ -477,10 +585,35 @@
     <main class="main" style="padding: 4rem 0;">
         <div class="container">
             <a href="index.html" class="back-link">← Back to Home</a>
-            
-            <article class="post-content">
-                <div class="loading">Loading post...</div>
-            </article>
+
+            <div class="post-layout">
+                <article class="post-content">
+                    <div class="loading">Loading post...</div>
+                </article>
+
+                <aside class="post-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Other Posts</h3>
+                        <div class="other-posts" id="otherPosts">
+                            <div class="loading-sidebar">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Categories</h3>
+                        <div class="categories" id="sidebarCategories">
+                            <div class="loading-sidebar">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Tags</h3>
+                        <div class="tags" id="sidebarTags">
+                            <div class="loading-sidebar">Loading...</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
         </div>
     </main>
 
@@ -502,9 +635,14 @@
         document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const filename = urlParams.get('file');
-            
+
             if (filename) {
+                // Load the main post
                 await blog.renderSinglePost(filename);
+
+                // Load sidebar content
+                await loadSidebarContent(filename);
+
                 // Trigger syntax highlighting after content is loaded
                 if (typeof Prism !== 'undefined') {
                     Prism.highlightAll();
@@ -515,6 +653,94 @@
                 document.querySelector('.post-content').innerHTML = '<h1>No post specified</h1>';
             }
         });
+
+        // Function to load sidebar content
+        async function loadSidebarContent(currentFilename) {
+            try {
+                // Load all posts for sidebar
+                const posts = await blog.loadPostsList();
+
+                // Filter out current post and get other posts
+                const otherPosts = posts.filter(post => post.filename !== currentFilename);
+
+                // Populate other posts section
+                const otherPostsContainer = document.getElementById('otherPosts');
+                if (otherPosts.length > 0) {
+                    otherPostsContainer.innerHTML = otherPosts.slice(0, 5).map(post => {
+                        const date = new Date(post.date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                        return `
+                            <a href="post.html?file=${post.filename}" class="other-post-item">
+                                <div class="other-post-title">${post.title}</div>
+                                <div class="other-post-meta">${date} • ${post.category || 'General'}</div>
+                            </a>
+                        `;
+                    }).join('');
+                } else {
+                    otherPostsContainer.innerHTML = '<div class="loading-sidebar">No other posts available</div>';
+                }
+
+                // Populate categories section
+                const categories = [...new Set(posts.map(post => post.category || 'General'))];
+                const categoriesContainer = document.getElementById('sidebarCategories');
+                categoriesContainer.innerHTML = categories.map(category =>
+                    `<a href="index.html" class="category-item" data-filter-type="category" data-filter-value="${category}">${category}</a>`
+                ).join('');
+
+                // Populate tags section
+                const allTags = posts.reduce((tags, post) => {
+                    if (post.tags && Array.isArray(post.tags)) {
+                        tags.push(...post.tags);
+                    }
+                    return tags;
+                }, []);
+                const uniqueTags = [...new Set(allTags)];
+
+                const tagsContainer = document.getElementById('sidebarTags');
+                if (uniqueTags.length > 0) {
+                    tagsContainer.innerHTML = uniqueTags.slice(0, 10).map(tag =>
+                        `<a href="index.html" class="tag-item" data-filter-type="tag" data-filter-value="${tag}">${tag}</a>`
+                    ).join('');
+                } else {
+                    tagsContainer.innerHTML = '<div class="loading-sidebar">No tags available</div>';
+                }
+
+                // Add click handlers for filter links
+                setupFilterLinks();
+
+            } catch (error) {
+                console.error('Error loading sidebar content:', error);
+                document.getElementById('otherPosts').innerHTML = '<div class="loading-sidebar">Error loading posts</div>';
+                document.getElementById('sidebarCategories').innerHTML = '<div class="loading-sidebar">Error loading categories</div>';
+                document.getElementById('sidebarTags').innerHTML = '<div class="loading-sidebar">Error loading tags</div>';
+            }
+        }
+
+        // Setup filter links to work with the home page filtering system
+        function setupFilterLinks() {
+            // Category filter links
+            document.querySelectorAll('[data-filter-type="category"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.dataset.filterValue;
+                    // Navigate to home page with category filter
+                    window.location.href = `index.html?category=${encodeURIComponent(category)}`;
+                });
+            });
+
+            // Tag filter links
+            document.querySelectorAll('[data-filter-type="tag"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tag = this.dataset.filterValue;
+                    // Navigate to home page with tag filter
+                    window.location.href = `index.html?tag=${encodeURIComponent(tag)}`;
+                });
+            });
+        }
 
         // Image zoom functionality
         function initializeImageZoom() {

@@ -93,9 +93,7 @@ RQ-VAE architecture consists of three core components working in sequence:
 2. Residual Quantizer: The hierarchical quantization core with M levels of codebooks {C₁, C₂, ..., Cₘ}, each containing K vectors
 3. Decoder: Reconstructs content from quantized representations x̂ = D(z_q) using transposed convolutions or Transformer decoders
 
-The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords.
-
-The **training objective** balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
+The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The **training objective** balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
 
 ![RQ-VAE](images/posts/rqvae.png)
 

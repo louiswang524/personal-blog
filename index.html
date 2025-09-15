@@ -110,6 +110,39 @@
         // Load and render posts on page load
         document.addEventListener('DOMContentLoaded', async function() {
             await blog.renderPosts();
+
+            // Handle URL parameters for filtering
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryFilter = urlParams.get('category');
+            const tagFilter = urlParams.get('tag');
+
+            if (categoryFilter) {
+                // Filter by category
+                blog.searchQuery = '';
+                blog.selectedTags.clear();
+                blog.filteredPosts = blog.allPosts.filter(post =>
+                    (post.category || 'General') === categoryFilter
+                );
+                blog.renderFilteredPosts();
+
+                // Update search input to show the filter
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.value = `Category: ${categoryFilter}`;
+                }
+            } else if (tagFilter) {
+                // Filter by tag
+                blog.searchQuery = '';
+                blog.selectedTags.clear();
+                blog.selectedTags.add(tagFilter);
+                blog.filterPosts();
+
+                // Update search input to show the filter
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.value = `Tag: ${tagFilter}`;
+                }
+            }
         });
     </script>
     <script src="script.js"></script>
