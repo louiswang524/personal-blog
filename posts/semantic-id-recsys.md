@@ -38,11 +38,45 @@ Systems like TIGER[2] demonstrate this approach by learning to predict semantic 
 
 This progression reveals a clear pattern: each advance in NLP consistently translates to recommendation systems with appropriate architectural adaptations, suggesting continued potential for future NLP breakthroughs to transform recommendation technology.
 
+## The fundamental problem with traditional IDs
+
+Traditional recommendation systems rely on arbitrary identifiers—simple integers like "item_12847" or "user_98123"—that carry no inherent meaning. While these systems have powered the recommendation engines of major platforms for decades, they face increasingly severe limitations as the digital ecosystem grows more complex and dynamic.
+
+### Massive embedding table overhead
+
+The most immediate challenge is **memory scalability**. Modern platforms like YouTube handle over 2 billion videos, Amazon catalogs hundreds of millions of products, and TikTok processes billions of short videos. Each item requires a dense embedding vector (typically 64-512 dimensions of 32-bit floats), resulting in embedding tables consuming hundreds of gigabytes to terabytes of memory. For a catalog of 100 million items with 256-dimensional embeddings, the storage requirement alone exceeds 100GB, not including the additional infrastructure for efficient retrieval and updates.
+
+This massive memory footprint creates operational challenges: increased hardware costs, slower model loading times, and complex distributed storage systems. More critically, the memory requirements grow linearly with catalog size, making traditional approaches unsustainable for platforms experiencing rapid content growth.
+
+### The cold-start catastrophe
+
+Traditional ID-based systems face an **insurmountable cold-start problem**. New items begin with randomly initialized embeddings that carry no semantic information, requiring substantial interaction data before becoming meaningful. A newly uploaded YouTube video or recently listed Amazon product effectively doesn't exist in the recommendation system until users discover it organically—creating a chicken-and-egg problem where items need exposure to gain exposure.
+
+The impact is particularly severe for:
+- **Long-tail content creators**: New YouTubers struggle to gain initial traction without recommendation system support
+- **Seasonal or trending products**: Time-sensitive items may expire before accumulating sufficient interaction data
+- **Niche categories**: Specialized content suffers from limited user overlap needed for collaborative filtering
+
+Research shows that 40-60% of new items on major platforms receive fewer than 10 interactions in their first week, rendering them effectively invisible to traditional recommendation algorithms.
+
+### Data sparsity and maintenance overhead
+
+The **sparsity challenge** compounds over time. As catalogs grow, the fraction of item pairs with overlapping user interactions decreases exponentially. A platform with 10 million items and 1 million users typically achieves less than 0.01% density in user-item interaction matrices, making collaborative filtering increasingly unreliable for discovering meaningful item relationships.
+
+Furthermore, traditional systems require **continuous embedding updates** as user preferences evolve and new interaction patterns emerge. This creates significant computational overhead: retraining embedding tables, managing version conflicts, and ensuring consistency across distributed systems. The maintenance burden grows with both catalog size and user base, requiring increasingly sophisticated infrastructure to maintain recommendation quality.
+
+### Why semantic IDs solve these problems
+
+Semantic IDs address these fundamental limitations through **content-derived representations**. Instead of arbitrary integers, items are represented by semantically meaningful token sequences that encode their actual properties. A science fiction movie might be represented as [genre_12, style_153, director_87], where each token captures genuine content attributes rather than memorized interaction patterns.
+
+This approach delivers **immediate cold-start resolution**—new items inherit semantic properties from their content without requiring interaction history. **Memory efficiency** improves dramatically through discrete tokenization (3-8 integers vs. 256+ floats per item). **Maintenance overhead** decreases since semantic representations remain stable as content properties don't change, unlike interaction-dependent embeddings that require frequent updates.
+
+The transition from arbitrary IDs to semantic IDs represents a paradigm shift from memorization-based to understanding-based recommendation systems, enabling both better performance and sustainable scalability.
 
 ## The general Idea - vector quantization
 **Vector quantization provides the theoretical foundation** that transforms continuous embeddings into discrete, semantically meaningful tokens. Traditional VQ maps high-dimensional vectors to finite codebooks, but modern semantic ID systems employ sophisticated Residual Quantization Variational AutoEncoders (RQ-VAE) that create hierarchical representations. 
 
-The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction."
+The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction." 
 
 RQ-VAE architecture consists of three core components working in sequence:
 
@@ -53,7 +87,10 @@ RQ-VAE architecture consists of three core components working in sequence:
 The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords.
 
 The **training objective** balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
+
 ![RQ-VAE](images/posts/rqvae.png)
+
+Let L be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^L total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID.
 
 **Semantic ID advantages over continuous embeddings** are profound. Memory compression achieves 100-200x reduction in storage requirements—storing 3-8 integer tokens per item instead of 768-dimensional float vectors. Inference speed improves dramatically through O(1) integer indexing versus O(d) vector operations. Most importantly, semantic IDs solve cold-start problems by enabling new items to immediately inherit semantic properties from content without requiring interaction history.
 
@@ -79,7 +116,11 @@ The OneRec architecture uses hierarchical semantic IDs with residual quantizatio
 
 Two things worth mentioned which are different from the TIGER paper. First, Onerec uses Balanced RQ-Kmeans as it claims that RQ-VAE is suboptimal due to the unbalanced code distribution. They apply multi-level balanced quantitative mechanism to transform the item embedding with residual k-means quantization algorithm. Second, there's an iterative preference alignment with Reward Model to align user preference.
 
-### Snapchat [9]
+### Meta: Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID [10]
+
+Meta's production ads system represents the most mature industrial deployment, running for over a year with 0.15% online performance gain—significant at Meta's scale. Their "Semantic ID prefix-ngram" approach addresses three critical challenges: item cardinality, impression skew, and ID drifting. The system processes multimodal content (text, image, video) through frozen RQ-VAE models, ensuring consistent encoding while serving as top sparse features by importance in their ranking models.
+
+### Snapchat: GRID [9]
 
 **Snapchat's GRID framework** provides an open-source implementation enabling broader adoption. The three-stage process—LLM embedding generation, semantic ID learning, and generative recommendations—supports multiple quantization techniques (RQ-KMeans, RQ-VAE, RVQ) with transformer-based generative models. ByteDance's Monolith system for TikTok addresses similar challenges through collision-less embedding tables using Cuckoo hashing, handling billions of video IDs with unique representations in real-time streaming architectures.
 
