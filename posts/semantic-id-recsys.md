@@ -8,25 +8,12 @@ tags: ["RecSys"]
 # Semantic ID for Modern Recommendation System
 
 ## Table of Contents
-- [Semantic ID for Modern Recommendation System](#semantic-id-for-modern-recommendation-system)
-  - [Table of Contents](#table-of-contents)
-  - [Intuition: NLP \<\> Recommendation system](#intuition-nlp--recommendation-system)
-    - [From word vectors to item understanding (2013)](#from-word-vectors-to-item-understanding-2013)
-    - [GRU4Rec (2015)](#gru4rec-2015)
-    - [BERT2Rec (2019)](#bert2rec-2019)
-    - [Generative Recommendation (2022 - now)](#generative-recommendation-2022---now)
-  - [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
-    - [Massive embedding table overhead](#massive-embedding-table-overhead)
-    - [The cold-start catastrophe](#the-cold-start-catastrophe)
-    - [Data sparsity and maintenance overhead](#data-sparsity-and-maintenance-overhead)
-    - [Why semantic IDs solve these problems](#why-semantic-ids-solve-these-problems)
-  - [The general Idea - vector quantization](#the-general-idea---vector-quantization)
-  - [Industry innovations at massive scale: Google, Kuaishou, Baidu](#industry-innovations-at-massive-scale-google-kuaishou-baidu)
-    - [Google: TIGER\[2\]](#google-tiger2)
-    - [Kuaishou: OneRec\[8\]](#kuaishou-onerec8)
-    - [Baidu: Sparse Meets Dense\[9\]](#baidu-sparse-meets-dense9)
-  - [Conclusion](#conclusion)
-  - [Future Directions](#future-directions)
+- [Intuition: NLP <> Recommendation system](#intuition-nlp--recommendation-system)
+- [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
+- [The general Idea - vector quantization](#the-general-idea---vector-quantization)
+- [Industry innovations at massive scale: Google, Kuaishou, Baidu](#industry-innovations-at-massive-scale-google-kuaishou-baidu)
+- [Conclusion](#conclusion)
+- [Future Directions](#future-directions)
 
 ## Intuition: NLP <> Recommendation system
 
@@ -105,7 +92,7 @@ Here are some key concepts to help you understand the vector quantization:
 - Lastly, since quantization is non-differentiable when mapping from  the continuous vectors to discrete codebook entries, it stops gradient flow during backpropagation. The **Straight-Through Estimator (STE)** provides a practical workaround for this issue. It's an approximation used specifically during the backward pass. Specifically, it treats the discrete quantized output as if it were continuous during the backward pass, effectively copying the gradient from the quantized vector to the original continuous vector. This trick enables the model to be trained end-to-end despite the presence of discrete variables, maintaining the benefits of gradient-based optimization.
 
 
-After kowning how vector quantization works, why most companies choose residual quantization? RQ-VAE uses multiple quantization stages in a residual manner, where each stage quantizes the residual from the previous stage. This creates a hierarchical representation that can capture both coarse and fine-grained features, and can represent much more items which is very helpful in recommendation system. It also shows better representation and codebook utilization and more stable training. The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction." 
+After kowning how vector quantization works, why most companies choose residual quantization? RQ-VAE uses **multiple quantization stages** in a residual manner, where each stage quantizes the residual from the previous stage. This creates a hierarchical representation that can capture both coarse and fine-grained features, and can represent much more items which is very helpful in recommendation system. It also shows better representation and codebook utilization and more stable training. The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction." 
 
 RQ-VAE architecture consists of three core components working in sequence:
 
@@ -119,8 +106,8 @@ Let M be the number of layers (i.e., length of the sequence) and K be the codebo
 ```python
 ...
 
-# Each quantizer has its own codebook
-# This allows each level to specialize for different types of residuals
+ # Each quantizer has its own codebook
+ # This allows each level to specialize for different types of residuals
 self.quantizers = nn.ModuleList([
     VectorQuantizer(
         num_embeddings=num_embeddings,
