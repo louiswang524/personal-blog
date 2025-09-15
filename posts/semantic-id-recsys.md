@@ -8,11 +8,11 @@ tags: ["RecSys"]
 # Semantic ID for modern Recommendation System
 
 ## Table of Contents
-- [Intuition: NLP <> Recommendation system](#intuition-nlp--recommendation-system)
+- [Intuition: NLP <> Recommendation system](#intuition-nlp-recommendation-system)
 - [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
-- [The general Idea - vector quantization](#the-general-idea---vector-quantization)
+- [The general Idea - vector quantization](#the-general-idea-vector-quantization)
 - [Industry innovations at massive scale: Google, Kuaishou, Meta, Snapchat](#industry-innovations-at-massive-scale-google-kuaishou-meta-snapchat)
-- [Conclution](#conclution)
+- [Conclusion](#conclusion)
 - [Future Directions](#future-directions)
 
 ## Intuition: NLP <> Recommendation system
@@ -135,7 +135,7 @@ Meta's production ads system represents the most mature industrial deployment, r
 
 Common technical patterns emerge across implementations: multimodal content encoding, sophisticated quantization schemes (typically 3-8 hierarchical levels with 256-2048 entries per level), specialized tokenization approaches, and integration with existing ranking systems. Performance improvements consistently appear in cold-start scenarios (20-50% improvements in hit rate and NDCG), long-tail item recommendations, and memory efficiency (up to 80% reduction in embedding table sizes).
 
-## Conclution 
+## Conclusion 
 The latest developments (2023-2025) show remarkable advances in both performance and integration sophistication. RPG (KDD 2025) eliminates the autoregressive bottleneck through parallel prediction of long semantic IDs (up to 64 tokens), achieving 12.6% improvement in NDCG@10 over generative baselines while dramatically improving inference efficiency.
 
 LLM integration represents the current frontier. FLIP[10] (Huawei) successfully aligns ID-based recommendation models with LLMs through joint learning, showing 6-17% improvements with 80% token size reduction. CALRec fine-tunes PaLM-2 for sequential recommendations, while RecGPT demonstrates zero-shot generalization across recommendation domains through unified item tokenization with Finite Scalar Quantization (FSQ). 

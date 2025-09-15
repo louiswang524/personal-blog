@@ -37,14 +37,41 @@ class MarkdownParser {
     }
     
     processHeaders(html) {
-        // Handle headers H1-H6
-        html = html.replace(/^#{6}\s+(.*)$/gim, '<h6>$1</h6>');
-        html = html.replace(/^#{5}\s+(.*)$/gim, '<h5>$1</h5>');
-        html = html.replace(/^#{4}\s+(.*)$/gim, '<h4>$1</h4>');
-        html = html.replace(/^#{3}\s+(.*)$/gim, '<h3>$1</h3>');
-        html = html.replace(/^#{2}\s+(.*)$/gim, '<h2>$1</h2>');
-        html = html.replace(/^#{1}\s+(.*)$/gim, '<h1>$1</h1>');
-        
+        // Handle headers H1-H6 with automatic anchor generation
+        const generateId = (text) => {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .replace(/-+/g, '-') // Replace multiple hyphens with single
+                .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+        };
+
+        html = html.replace(/^#{6}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h6 id="${id}">${text}</h6>`;
+        });
+        html = html.replace(/^#{5}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h5 id="${id}">${text}</h5>`;
+        });
+        html = html.replace(/^#{4}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h4 id="${id}">${text}</h4>`;
+        });
+        html = html.replace(/^#{3}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h3 id="${id}">${text}</h3>`;
+        });
+        html = html.replace(/^#{2}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h2 id="${id}">${text}</h2>`;
+        });
+        html = html.replace(/^#{1}\s+(.*)$/gim, (match, text) => {
+            const id = generateId(text);
+            return `<h1 id="${id}">${text}</h1>`;
+        });
+
         return html;
     }
     

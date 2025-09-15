@@ -20,13 +20,16 @@ class MarkdownToJSON {
             frontMatterLines.forEach(line => {
                 const [key, ...valueParts] = line.split(':');
                 if (key && valueParts.length > 0) {
-                    let value = valueParts.join(':').trim().replace(/['"]/g, '');
-                    
-                    // Handle arrays (tags)
+                    let value = valueParts.join(':').trim();
+
+                    // Handle arrays (tags) - keep quotes for JSON parsing
                     if (value.startsWith('[') && value.endsWith(']')) {
                         value = JSON.parse(value);
+                    } else {
+                        // Remove quotes for regular string values
+                        value = value.replace(/['"]/g, '');
                     }
-                    
+
                     frontMatter[key.trim()] = value;
                 }
             });
