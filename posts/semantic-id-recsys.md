@@ -102,13 +102,13 @@ RQ-VAE architecture consists of three core components working in sequence:
 
 1. Encoder: Maps raw content (text, images, video) to continuous latent representations z = E(x) using neural networks like ResNet for images or Transformer encoders for text
 2. Residual Quantizer: The hierarchical quantization core with M levels of codebooks {C₁, C₂, ..., Cₘ}, each containing K vectors
-3. Decoder: Reconstructs content from quantized representations x̂ = D(z_q) using transposed convolutions or Transformer decoders
+3. Decoder: Reconstructs content from quantized representations x̂ = D(z_q) using transposed convolutions or Transformer decoders.
 
-The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The **training objective** balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
-
-![RQ-VAE](images/posts/rqvae.png)
+The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The training objective balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
 
 Let L be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^L total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID.
+
+![RQ-VAE](images/posts/rqvae.png)
 
 **Semantic ID advantages over continuous embeddings** are profound. Memory compression achieves 100-200x reduction in storage requirements—storing 3-8 integer tokens per item instead of 768-dimensional float vectors. Inference speed improves dramatically through O(1) integer indexing versus O(d) vector operations. Most importantly, semantic IDs solve cold-start problems by enabling new items to immediately inherit semantic properties from content without requiring interaction history.
 
