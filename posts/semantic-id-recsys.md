@@ -9,20 +9,9 @@ tags: ["RecSys"]
 
 ## Table of Contents
 - [Intuition: NLP <> Recommendation system](#intuition-nlp--recommendation-system)
-  - [From word vectors to item understanding (2013)](#from-word-vectors-to-item-understanding-2013)
-  - [GRU4Rec (2015)](#gru4rec-2015)
-  - [BERT2Rec (2019)](#bert2rec-2019)
-  - [Generative Recommendation (2022 - now)](#generative-recommendation-2022---now)
 - [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
-  - [Massive embedding table overhead](#massive-embedding-table-overhead)
-  - [The cold-start catastrophe](#the-cold-start-catastrophe)
-  - [Data sparsity and maintenance overhead](#data-sparsity-and-maintenance-overhead)
-  - [Why semantic IDs solve these problems](#why-semantic-ids-solve-these-problems)
 - [The general Idea - vector quantization](#the-general-idea---vector-quantization)
 - [Industry innovations at massive scale: Google, Kuaishou, Baidu](#industry-innovations-at-massive-scale-google-kuaishou-baidu)
-  - [Google: TIGER[2]](#google-tiger2)
-  - [Kuaishou: OneRec[8]](#kuaishou-onerec8)
-  - [Baidu: Sparse Meets Dense[9]](#baidu-sparse-meets-dense9)
 - [Conclusion](#conclusion)
 - [Future Directions](#future-directions)
 
@@ -154,6 +143,7 @@ The paper represents a major shift toward applying modern generative AI techniqu
 Both TIGER and OneRec have two stages: vector quantization to generate semantic ID, and then sequence modeling with transformers for generative recommendation. Baidu's paper claims that there is some information loss due to the separation of stages such as quantization and sequence modeling, and its COBRA (Cascaded Bi-Representation Architecture) Framework solves the challenge of integrating generative and dense retrieval methods.
 
 ![COBRA](images/posts/cobra.png)
+
 1. COBRA innovatively integrates sparse semantic IDs and dense vectors through a cascading process where the method alternates between generating these representations by first generating sparse IDs, which serve as conditions to aid in the generation of dense vectors.
    
 2. Coarse-to-Fine Generation Strategy: During inference, COBRA employs a coarse-to-fine generation process, starting with sparse ID that provides a high-level categorical sketch capturing the categorical essence of the item. The generated ID is then appended to the input sequence and fed back into the model to predict the dense vector that captures the fine-grained details.
