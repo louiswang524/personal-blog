@@ -159,22 +159,22 @@ Technical breakthroughs on the horizon include universal semantic languages that
 
 reference:
 
-[1] Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations (https://arxiv.org/html/2306.08121v2)
+[1] [Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations](https://arxiv.org/html/2306.08121v2)
 
-[2] Recommender Systems with Generative Retrieval (https://openreview.net/forum?id=BJ0fQUU32w)
+[2] [Recommender Systems with Generative Retrieval](https://openreview.net/forum?id=BJ0fQUU32w)
 
-[3] Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID (https://arxiv.org/abs/2504.02137)
+[3] [Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/abs/2504.02137)
 
-[4] Distributed Representations of Words and Phrases and their Compositionality (https://arxiv.org/abs/1310.4546)
+[4] [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546)
 
-[5] Item2Vec: Neural Item Embedding for Collaborative Filtering (https://arxiv.org/abs/1603.04259)
+[5] [Item2Vec: Neural Item Embedding for Collaborative Filtering](https://arxiv.org/abs/1603.04259)
 
-[6] Session-based Recommendations with Recurrent Neural Networks (https://arxiv.org/abs/1511.06939)
+[6] [Session-based Recommendations with Recurrent Neural Networks](https://arxiv.org/abs/1511.06939)
 
-[7] BERT4Rec: Sequential Recommendation with Bidirectional Encoder Representations from Transformer (https://arxiv.org/abs/1904.06690)
+[7] [BERT4Rec: Sequential Recommendation with Bidirectional Encoder Representations from Transformer](https://arxiv.org/abs/1904.06690)
 
-[8] OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment (https://arxiv.org/abs/2502.18965)
+[8] [OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/abs/2502.18965)
 
-[9] Generative Recommendation with Semantic IDs: A Practitioner's Handbook (https://arxiv.org/abs/2507.22224)
+[9] [Generative Recommendation with Semantic IDs: A Practitioner's Handbook](https://arxiv.org/abs/2507.22224)
 
-[10] FLIP: Fine-grained Alignment between ID-based Models and Pretrained Language Models for CTR Prediction (https://arxiv.org/abs/2310.19453)
+[10] [FLIP: Fine-grained Alignment between ID-based Models and Pretrained Language Models for CTR Prediction](https://arxiv.org/abs/2310.19453)
