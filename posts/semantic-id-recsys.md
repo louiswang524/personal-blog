@@ -93,9 +93,8 @@ RQ-VAE architecture consists of three core components working in sequence:
 2. Residual Quantizer: The hierarchical quantization core with M levels of codebooks {C₁, C₂, ..., Cₘ}, each containing K vectors
 3. Decoder: Reconstructs content from quantized representations x̂ = D(z_q) using transposed convolutions or Transformer decoders.
 
-The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The training objective balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
 
-Let L be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^L total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID.
+Let L be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^L total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID. The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The training objective balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
 
 ![RQ-VAE](images/posts/rqvae.png)
 
@@ -126,14 +125,9 @@ Kuaishou's comprehensive approach demonstrates semantic IDs' versatility across 
 
 Three Key Technical Components:
 
-1. Encoder-Decoder with Sparse MoE Architecture
-OneRec uses "an encoder-decoder structure, which encodes the user's historical behavior sequences and gradually decodes the videos that the user may be interested in" with "sparse Mixture-of-Experts (MoE) to scale model capacity without proportionally increasing computational FLOPs."
-
-2. Session-Wise Generation Approach
-Rather than traditional next-item prediction, OneRec proposes session-wise generation, which is more elegant and contextually coherent than point-by-point generation that relies on hand-crafted rules to properly combine the generated results. This approach considers the relative content and order of the items within each session.
-
-3. Iterative Preference Alignment (IPA)
-OneRec includes an Iterative Preference Alignment module combined with Direct Preference Optimization (DPO) to enhance the quality of the generated results. This addresses a unique challenge: Unlike DPO in NLP, a recommendation system typically has only one opportunity to display results for each user's browsing request, making it impossible to obtain positive and negative samples simultaneously.
+1. Encoder-Decoder with Sparse MoE Architecture. OneRec uses "an encoder-decoder structure, which encodes the user's historical behavior sequences and gradually decodes the videos that the user may be interested in" with "sparse Mixture-of-Experts (MoE) to scale model capacity without proportionally increasing computational FLOPs."
+2. Session-Wise Generation Approach. Rather than traditional next-item prediction, OneRec proposes session-wise generation, which is more elegant and contextually coherent than point-by-point generation that relies on hand-crafted rules to properly combine the generated results. This approach considers the relative content and order of the items within each session.
+3. Iterative Preference Alignment (IPA). OneRec includes an Iterative Preference Alignment module combined with Direct Preference Optimization (DPO) to enhance the quality of the generated results. This addresses a unique challenge: Unlike DPO in NLP, a recommendation system typically has only one opportunity to display results for each user's browsing request, making it impossible to obtain positive and negative samples simultaneously.
 
 The paper represents a major shift toward applying modern generative AI techniques to recommendation systems, moving away from complex multi-stage pipelines toward unified end-to-end approaches. It shows that techniques successful in language modeling (scaling laws, preference alignment) can be adapted effectively for recommendation tasks, potentially setting a new direction for the field.
 
@@ -145,9 +139,7 @@ Both TIGER and OneRec have two stages: vector quantization to generate semantic 
 ![COBRA](images/posts/cobra.png)
 
 1. COBRA innovatively integrates sparse semantic IDs and dense vectors through a cascading process where the method alternates between generating these representations by first generating sparse IDs, which serve as conditions to aid in the generation of dense vectors.
-   
 2. Coarse-to-Fine Generation Strategy: During inference, COBRA employs a coarse-to-fine generation process, starting with sparse ID that provides a high-level categorical sketch capturing the categorical essence of the item. The generated ID is then appended to the input sequence and fed back into the model to predict the dense vector that captures the fine-grained details.
-
 3. BeamFusion Sampling: The framework introduces **BeamFusion**, a sampling technique combining beam search with nearest neighbor retrieval scores, ensuring controllable diversity in the retrieved items and an innovative approach combining beam search with nearest neighbor scores to enhance inference flexibility and recommendation diversity.
 
 Common technical patterns emerge across implementations: multimodal content encoding, sophisticated quantization schemes (typically 3-8 hierarchical levels with 256-2048 entries per level), specialized tokenization approaches, and integration with existing ranking systems. Performance improvements consistently appear in cold-start scenarios, long-tail item recommendations, and memory efficiency from reducing embedding table size.
