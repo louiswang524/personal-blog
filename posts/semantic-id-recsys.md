@@ -85,7 +85,9 @@ The transition from arbitrary IDs to semantic IDs represents a paradigm shift fr
 ## The general Idea - vector quantization
 **Vector quantization provides the theoretical foundation** that transforms continuous embeddings into discrete, semantically meaningful tokens. Traditional VQ maps high-dimensional vectors to finite codebooks, but modern semantic ID systems employ sophisticated Residual Quantization Variational AutoEncoders (RQ-VAE) that create hierarchical representations. 
 
-The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction." 
+Here are some key concepts to help you understand the vector quantization: First, the codebook is a learnable dictionary of vectors (embedding table). Second, the Quantization is to find the nearest codebook vector from the embedding table for each input. Given an input, the quantization process is to find the closest cluster center to the input, and use the vector of that center as the input's code. Third, an important thing for training good vector quantizer is to align the codebook and quantized vectors. The commitment loss is design for this: aligning the encoder outputs with the available codebook entries. When the quantized vectors drift too far from the chosen codebook center, we penalize it more in the loss function. Lastly, since quantization is non-differentiable when mapping from  the continuous vectors to discrete codebook entries, it stops gradient flow during backpropagation. The **Straight-Through Estimator (STE)** provides a practical workaround for this issue. It's an approximation used specifically during the backward pass. Specifically, it treats the discrete quantized output as if it were continuous during the backward pass, effectively copying the gradient from the quantized vector to the original continuous vector. This trick enables the model to be trained end-to-end despite the presence of discrete variables, maintaining the benefits of gradient-based optimization.
+
+After kowning how vector quantization works, why most companies choose residual quantization? RQ-VAE uses multiple quantization stages in a residual manner, where each stage quantizes the residual from the previous stage. This creates a hierarchical representation that can capture both coarse and fine-grained features, and can represent much more items which is very helpful in recommendation system. It also shows better representation and codebook utilization and more stable training. The process begins with extracting rich content embeddings using pre-trained CLIP for text and images, VideoCLIP for multimodal content. These continuous representations are then quantized through a hierarchical process where each level captures different semantic granularities. Level 1 might represent broad categories like "Science Fiction," Level 2 refines to "Space Opera," and Level 3 captures specific attributes like "Hard Science Fiction." 
 
 RQ-VAE architecture consists of three core components working in sequence:
 
@@ -94,7 +96,52 @@ RQ-VAE architecture consists of three core components working in sequence:
 3. Decoder: Reconstructs content from quantized representations x̂ = D(z_q) using transposed convolutions or Transformer decoders.
 
 
-Let L be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^L total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID. The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as z_q = Σᵢ₌₁ᴹ r̂ᵢ. The approach achieves exponential expressiveness—M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The training objective balances reconstruction quality with quantization stability: L = ||x - Dec(z_q)||² + ||sg[z_e] - e_k||² + β||z_e - sg[e_k]||², where the first term ensures faithful reconstruction, the second updates codebook vectors, and the third prevents encoder drift through commitment loss.
+Let M be the number of layers (i.e., length of the sequence) and K be the codebook size (i.e., number of clusters at each layer),  resulting in K^M total clusters. The precision of vector quantization increases as one moves from the first token, to the deeper tokens. Hence, a tradeoff exists between the cardinality of the token parameterization and the amount of information the model receives from Semantic ID. The residual quantization process works through multi-stage refinement. Stage 1 applies standard vector quantization: x̂₁ = Q₁(z) where Q₁ finds the nearest codebook vector in C₁. Stage 2 quantizes the residual: r₁ = z - x̂₁, then r̂₁ = Q₂(r₁) using codebook C₂. This continues recursively across M levels, with final reconstruction as the sum of residuals in each level. The approach achieves exponential expressiveness — M codebooks of size K each can represent K^M unique vectors using only M×K stored codewords. The following scripts can show you the idea:
+
+```python
+...
+
+# Each quantizer has its own codebook
+# This allows each level to specialize for different types of residuals
+self.quantizers = nn.ModuleList([
+    VectorQuantizer(
+        num_embeddings=num_embeddings,
+        embedding_dim=embedding_dim,
+        commitment_cost=commitment_cost,
+        decay=decay
+    ) for _ in range(num_quantizers)
+])
+
+
+ # Start with the original input as the first residual, x is the input
+residual = x
+
+# Apply quantization layers sequentially
+for i, quantizer in enumerate(self.quantizers):
+    # Quantize the current residual
+    quantized_residual, vq_loss, perplexity = quantizer(residual)
+
+    # Store results
+    quantized_list.append(quantized_residual)
+    perplexity_list.append(perplexity)
+    loss_list.append(vq_loss)
+
+    # Update residual for next iteration
+    # The residual becomes what's left after this quantization step
+    residual = residual - quantized_residual
+
+# Final quantized representation is the sum of all quantization levels
+# This reconstructs the original input as a sum of discrete components
+quantized = torch.stack(quantized_list, dim=0).sum(dim=0)
+
+# Total loss is the mean of all quantization losses
+# Each layer contributes equally to the training objective
+total_loss = torch.stack(loss_list).mean()
+
+...
+```
+
+There are also other methods on generating semantic IDs. For more technical details and how to implement them, please checkout my github on educational implementations: [vector-quantization](https://github.com/louiswang524/vector-quantization/)
 
 ![RQ-VAE](images/posts/rqvae.png)
 
@@ -102,7 +149,7 @@ Let L be the number of layers (i.e., length of the sequence) and K be the codebo
 
 The hierarchical structure enables **interpretable recommendations**. When a system recommends a movie with semantic ID [12, 153, 87, 21], each token provides insight: 12 represents the Science Fiction genre, 153 indicates mind-bending thriller subgenre, 87 captures Christopher Nolan's directorial style, and 21 represents dream/consciousness themes. This transparency enables both explainable recommendations and controllable generation.
 
-There are also other methods on generating semantic IDs. For more technical details and how to implement them, please checkout my github on educational implementations: [vector-quantization](https://github.com/louiswang524/vector-quantization/)
+
 
 ## Industry innovations at massive scale: Google, Kuaishou, Baidu
 
