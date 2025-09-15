@@ -8,12 +8,25 @@ tags: ["RecSys"]
 # Semantic ID for modern Recommendation System
 
 ## Table of Contents
-- [Intuition: NLP <> Recommendation system](#intuition-nlp-recommendation-system)
-- [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
-- [The general Idea - vector quantization](#the-general-idea-vector-quantization)
-- [Industry innovations at massive scale: Google, Kuaishou, Meta, Snapchat](#industry-innovations-at-massive-scale-google-kuaishou-meta-snapchat)
-- [Conclusion](#conclusion)
-- [Future Directions](#future-directions)
+- [Semantic ID for modern Recommendation System](#semantic-id-for-modern-recommendation-system)
+  - [Table of Contents](#table-of-contents)
+  - [Intuition: NLP \<\> Recommendation system](#intuition-nlp--recommendation-system)
+    - [From word vectors to item understanding (2013)](#from-word-vectors-to-item-understanding-2013)
+    - [GRU4Rec (2015)](#gru4rec-2015)
+    - [BERT2Rec (2019)](#bert2rec-2019)
+    - [Generative Recommendation (2022 - now)](#generative-recommendation-2022---now)
+  - [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
+    - [Massive embedding table overhead](#massive-embedding-table-overhead)
+    - [The cold-start catastrophe](#the-cold-start-catastrophe)
+    - [Data sparsity and maintenance overhead](#data-sparsity-and-maintenance-overhead)
+    - [Why semantic IDs solve these problems](#why-semantic-ids-solve-these-problems)
+  - [The general Idea - vector quantization](#the-general-idea---vector-quantization)
+  - [Industry innovations at massive scale: Google, Kuaishou, Snapchat](#industry-innovations-at-massive-scale-google-kuaishou-snapchat)
+    - [Google: TIGER\[2\]](#google-tiger2)
+    - [Kuaishou: OneRec\[8\]](#kuaishou-onerec8)
+    - [Baide: Sparse Meets Dense\[9\]](#baide-sparse-meets-dense9)
+  - [Conclusion](#conclusion)
+  - [Future Directions](#future-directions)
 
 ## Intuition: NLP <> Recommendation system
 
@@ -103,9 +116,11 @@ Let L be the number of layers (i.e., length of the sequence) and K be the codebo
 
 The hierarchical structure enables **interpretable recommendations**. When a system recommends a movie with semantic ID [12, 153, 87, 21], each token provides insight: 12 represents the Science Fiction genre, 153 indicates mind-bending thriller subgenre, 87 captures Christopher Nolan's directorial style, and 21 represents dream/consciousness themes. This transparency enables both explainable recommendations and controllable generation.
 
-## Industry innovations at massive scale: Google, Kuaishou, Meta, Snapchat
+There are also other methods on generating semantic IDs. For more technical details and how to implement them, please checkout my github on educational implementations: [vector-quantization](https://github.com/louiswang524/vector-quantization/)
+
+## Industry innovations at massive scale: Google, Kuaishou, Snapchat
 ### Google: TIGER[2]
-Major technology companies have deployed semantic ID systems in production with measurable business impact. Google's TIGER (Transformer Index for GEnerative Recommenders) represents a breakthrough in generative retrieval for recommendation systems, published at NeurIPS 2023 by researchers from Google and Google DeepMind.
+Major technology companies have deployed semantic ID systems in production with measurable business impact. Google's TIGER (Transformer Index for GEnerative Recommenders) represents a breakthrough in generative retrieval for recommendation systems, published at NeurIPS 2023 by researchers from Google.
 The TIGER framework consists of three core components:
 
 1. Semantic ID Generation: Uses RQ-VAE (Residual Quantized Variational AutoEncoder) to convert item content embeddings into discrete semantic tokens. Items are first encoded using pre-trained models like Sentence-T5 for text features (title, brand, category, price), then quantized through 3-level residual quantization with 256 codewords per level, creating semantic IDs like (5, 25, 78).
@@ -115,23 +130,36 @@ The TIGER framework consists of three core components:
 Performance results show TIGER achieves state-of-the-art performance across Amazon datasets (Beauty, Sports & Outdoors, Toys & Games), significantly outperforming existing baselines including GRU4Rec, SASRec, BERT4Rec, and S3-Rec in Recall@K and NDCG@K metrics. The hierarchical semantic structure enables superior generalization for cold-start items, with top-level tokens capturing broad categories and lower-level tokens representing fine-grained attributes.
 
 ### Kuaishou: OneRec[8]
-Kuaishou's comprehensive approach demonstrates semantic IDs' versatility across multiple products. Their breakthrough OneRec system represents the first industrial-scale end-to-end generative recommendation model, serving 400 million daily users across short-video and e-commerce platforms. OneRec employs a sophisticated encoder-decoder architecture with sparse Mixture-of-Experts (MoE) that scales to billions of items while maintaining efficiency.
+Kuaishou's comprehensive approach demonstrates semantic IDs' versatility across multiple products. Their breakthrough OneRec system represents the first industrial-scale end-to-end generative recommendation model, serving 400 million daily users across short-video and e-commerce platforms. 
 
 ![Onerec](images/posts/onerec.png)
 
-The OneRec architecture uses hierarchical semantic IDs with residual quantization, where each item is represented by a sequence like [cat_12, style_847, creator_156, topic_93]. The system's encoder processes multimodal content (visual, text, audio) through frozen pre-trained models, while the decoder generates semantic ID sequences autoregressively. The MoE approach activates only relevant expert networks based on semantic categories, achieving computational efficiency at massive scale.
+Three Key Technical Components:
 
-Two things worth mentioned which are different from the TIGER paper. First, Onerec uses Balanced RQ-Kmeans as it claims that RQ-VAE is suboptimal due to the unbalanced code distribution. They apply multi-level balanced quantitative mechanism to transform the item embedding with residual k-means quantization algorithm. Second, there's an iterative preference alignment with Reward Model to align user preference.
+1. Encoder-Decoder with Sparse MoE Architecture
+OneRec uses "an encoder-decoder structure, which encodes the user's historical behavior sequences and gradually decodes the videos that the user may be interested in" with "sparse Mixture-of-Experts (MoE) to scale model capacity without proportionally increasing computational FLOPs."
 
-### Meta: Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID [10]
+2. Session-Wise Generation Approach
+Rather than traditional next-item prediction, OneRec proposes session-wise generation, which is more elegant and contextually coherent than point-by-point generation that relies on hand-crafted rules to properly combine the generated results. This approach considers the relative content and order of the items within each session.
 
-Meta's production ads system represents the most mature industrial deployment, running for over a year with 0.15% online performance gain—significant at Meta's scale. Their "Semantic ID prefix-ngram" approach addresses three critical challenges: item cardinality, impression skew, and ID drifting. The system processes multimodal content (text, image, video) through frozen RQ-VAE models, ensuring consistent encoding while serving as top sparse features by importance in their ranking models.
+3. Iterative Preference Alignment (IPA)
+OneRec includes an Iterative Preference Alignment module combined with Direct Preference Optimization (DPO) to enhance the quality of the generated results. This addresses a unique challenge: Unlike DPO in NLP, a recommendation system typically has only one opportunity to display results for each user's browsing request, making it impossible to obtain positive and negative samples simultaneously.
 
-### Snapchat: GRID [9]
+The paper represents a major shift toward applying modern generative AI techniques to recommendation systems, moving away from complex multi-stage pipelines toward unified end-to-end approaches. It shows that techniques successful in language modeling (scaling laws, preference alignment) can be adapted effectively for recommendation tasks, potentially setting a new direction for the field.
 
-**Snapchat's GRID framework** provides an open-source implementation enabling broader adoption. The three-stage process—LLM embedding generation, semantic ID learning, and generative recommendations—supports multiple quantization techniques (RQ-KMeans, RQ-VAE, RVQ) with transformer-based generative models. ByteDance's Monolith system for TikTok addresses similar challenges through collision-less embedding tables using Cuckoo hashing, handling billions of video IDs with unique representations in real-time streaming architectures.
 
-Common technical patterns emerge across implementations: multimodal content encoding, sophisticated quantization schemes (typically 3-8 hierarchical levels with 256-2048 entries per level), specialized tokenization approaches, and integration with existing ranking systems. Performance improvements consistently appear in cold-start scenarios (20-50% improvements in hit rate and NDCG), long-tail item recommendations, and memory efficiency (up to 80% reduction in embedding table sizes).
+### Baide: Sparse Meets Dense[9]
+
+Both TIGER and OneRec have two stages: vector quantization to generate semantic ID, and then sequence modeling with transformers for generative recommendation. Baidu's paper claims that there is some information loss due to the separation of stages such as quantization and sequence modeling, and its COBRA (Cascaded Bi-Representation Architecture) Framework solves the challenge of integrating generative and dense retrieval methods.
+
+![COBRA](images/posts/cobra.png)
+1. COBRA innovatively integrates sparse semantic IDs and dense vectors through a cascading process where the method alternates between generating these representations by first generating sparse IDs, which serve as conditions to aid in the generation of dense vectors.
+   
+2. Coarse-to-Fine Generation Strategy: During inference, COBRA employs a coarse-to-fine generation process, starting with sparse ID that provides a high-level categorical sketch capturing the categorical essence of the item. The generated ID is then appended to the input sequence and fed back into the model to predict the dense vector that captures the fine-grained details.
+
+3. BeamFusion Sampling: The framework introduces **BeamFusion**, a sampling technique combining beam search with nearest neighbor retrieval scores, ensuring controllable diversity in the retrieved items and an innovative approach combining beam search with nearest neighbor scores to enhance inference flexibility and recommendation diversity.
+
+Common technical patterns emerge across implementations: multimodal content encoding, sophisticated quantization schemes (typically 3-8 hierarchical levels with 256-2048 entries per level), specialized tokenization approaches, and integration with existing ranking systems. Performance improvements consistently appear in cold-start scenarios, long-tail item recommendations, and memory efficiency from reducing embedding table size.
 
 ## Conclusion 
 The latest developments (2023-2025) show remarkable advances in both performance and integration sophistication. RPG (KDD 2025) eliminates the autoregressive bottleneck through parallel prediction of long semantic IDs (up to 64 tokens), achieving 12.6% improvement in NDCG@10 over generative baselines while dramatically improving inference efficiency.
@@ -147,13 +175,12 @@ Recent theoretical advances include Mixture-of-Codes approaches using multiple i
 ## Future Directions
 The next 2-5 years promise transformative developments across multiple dimensions. LLM integration will evolve toward universal recommendation foundation models that generalize across domains without fine-tuning. Current hybrid architectures combining memorization and generalization capabilities will mature into sophisticated systems balancing collaborative filtering insights with semantic understanding through advanced scaling laws and parameter-efficient techniques.
 
-Multimodal and cross-modal semantic IDs represent a major opportunity. Advanced multimodal architectures will integrate Transformers for encoding multi-modal content in RQ-VAE frameworks. Cross-modal transfer learning will enable better semantic understanding across different content modalities. Dynamic modal weight assignment will adaptively adjust modality importance based on user preferences and content characteristics. 
+Multimodal and cross-modal semantic IDs represent a major opportunity. **Advanced multimodal architectures** will integrate Transformers for encoding multi-modal content in RQ-VAE frameworks. Cross-modal transfer learning will enable better semantic understanding across different content modalities. Dynamic modal weight assignment will adaptively adjust modality importance based on user preferences and content characteristics. 
 
-Scalability innovations will address current bottlenecks. Parallel semantic ID generation eliminates autoregressive constraints while maintaining semantic coherence. Mixture-of-Codes approaches enable superior discriminability and dimension robustness for better scale-up performance. Real-time adaptive quantization will dynamically adjust semantic representations based on evolving content and user behavior patterns.
+Scalability innovations will address current bottlenecks. Parallel semantic ID[11] generation eliminates autoregressive constraints while maintaining semantic coherence. Mixture-of-Codes[12] approaches enable superior discriminability and dimension robustness for better scale-up performance. Real-time adaptive quantization[13] will dynamically adjust semantic representations based on evolving content and user behavior patterns.
 
 New application domains extend far beyond traditional recommendations. Conversational AI integration through Retrieval Augmented Generation (RAG) enables real-time, contextual recommendations. AI-Generated Content (AIGC) systems use semantic IDs to generate personalized items rather than just retrieve existing ones. Professional applications include LinkedIn's networking recommendations, enterprise knowledge management, educational content systems, and healthcare recommendations with privacy-preserving techniques.
 
-Technical breakthroughs on the horizon include universal semantic languages that work across domains and modalities, explainable semantic relationships enabling transparent reasoning, and causal semantic understanding moving beyond correlation to causal relationships. Multi-objective optimization will balance accuracy, diversity, fairness, and sustainability simultaneously. Human-AI collaborative filtering will seamlessly integrate human expertise with AI-generated semantic understanding.
 
 reference:
 
@@ -173,6 +200,12 @@ reference:
 
 [8] [OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/abs/2502.18965)
 
-[9] [Generative Recommendation with Semantic IDs: A Practitioner's Handbook](https://arxiv.org/abs/2507.22224)
+[9] [Sparse Meets Dense:Unified Generative Recommendations with Cascaded Sparse-Dense Representations](https://arxiv.org/abs/2503.02453)
 
 [10] [FLIP: Fine-grained Alignment between ID-based Models and Pretrained Language Models for CTR Prediction](https://arxiv.org/abs/2310.19453)
+
+[11] [Generating Long Semantic IDs in Parallel for Recommendation](https://arxiv.org/abs/2506.05781)
+
+[12] [Towards Scalable Semantic Representation for Recommendation](https://arxiv.org/html/2410.09560v1)
+
+[13] [LSAQ: Layer-Specific Adaptive Quantization for Large Language Model Deployment](https://arxiv.org/html/2412.18135v1)
