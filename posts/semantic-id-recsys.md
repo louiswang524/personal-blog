@@ -6,6 +6,15 @@ excerpt: A brief description of approaches to generate semantic IDs.
 tags: ["RecSys"]
 ---
 # Semantic ID for modern Recommendation System
+
+## Table of Contents
+- [Intuition: NLP <> Recommendation system](#intuition-nlp--recommendation-system)
+- [The fundamental problem with traditional IDs](#the-fundamental-problem-with-traditional-ids)
+- [The general Idea - vector quantization](#the-general-idea---vector-quantization)
+- [Industry innovations at massive scale: Google, Kuaishou, Meta, Snapchat](#industry-innovations-at-massive-scale-google-kuaishou-meta-snapchat)
+- [Conclution](#conclution)
+- [Future Directions](#future-directions)
+
 ## Intuition: NLP <> Recommendation system
 
 
